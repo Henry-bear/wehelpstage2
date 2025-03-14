@@ -129,19 +129,31 @@ def get_attractions(
         # **根據 keyword 建立 SQL 查詢**
         if keyword:
             sql_query = """
-                SELECT * FROM attractions 
-                WHERE mrt = %s OR name LIKE %s
+                SELECT 
+                    a.id, a.name, a.category, a.description, a.address, 
+                    a.transport, a.mrt, a.lat, a.lng,
+                    GROUP_CONCAT(i.url) AS images  
+                FROM attractions a
+                LEFT JOIN images i ON a.id = i.attraction_id  
+                WHERE a.mrt = %s OR a.name LIKE %s  
+                GROUP BY a.id  
                 LIMIT %s OFFSET %s
             """
             cursor.execute(sql_query, (keyword, f"%{keyword}%", limit, offset))
         else:
             sql_query = """
-                SELECT * FROM attractions 
+                SELECT 
+                    a.id, a.name, a.category, a.description, a.address, 
+                    a.transport, a.mrt, a.lat, a.lng,
+                    GROUP_CONCAT(i.url) AS images  
+                FROM attractions a
+                LEFT JOIN images i ON a.id = i.attraction_id
+                GROUP BY a.id
                 LIMIT %s OFFSET %s
             """
             cursor.execute(sql_query, (limit, offset))
 
-        Attraction = cursor.fetchall()
+        attractions = cursor.fetchall()
 
         # 取得總景點數
         if keyword:
@@ -154,20 +166,18 @@ def get_attractions(
         # 計算下一頁 page (如果有更多資料)
         next_page = page + 1 if (offset + limit) < total else None
 
-        # 加入圖片
-        for attraction in Attraction:
-            cursor.execute("SELECT url FROM images WHERE attraction_id = %s", (attraction["id"],))
-            images = cursor.fetchall()
-            attraction["images"] = [img["url"] for img in images]
+        # 加入圖片 URL
+        for attraction in attractions:
+            attraction["images"] = attraction["images"].split(",") if attraction["images"] else []
 
         cursor.close()
         db.close()
 
         return {
             "nextPage": next_page,
-            "data": Attraction
+            "data": attractions
         }
-    except Exception as err:
+    except Exception:
         return JSONResponse(
             status_code=500,
             content={"error": True, "message": "伺服器內部錯誤"}
@@ -180,7 +190,7 @@ def get_attractions(
 })
 def get_attraction(attractionId: str):
     try:
-        attractionId = int(attractionId)  # 手動轉換成整數
+        attractionId = int(attractionId)  # 轉換成整數
     except ValueError:
         return JSONResponse(
             status_code=400,
@@ -196,20 +206,29 @@ def get_attraction(attractionId: str):
         )
         cursor = db.cursor(dictionary=True)
 
-        # 取得特定的景點資料
-        cursor.execute("SELECT * FROM attractions WHERE id = %s", (attractionId,))
-        attraction = cursor.fetchone()
+        # 修改 SQL： JOIN attractions 和 images
+        cursor.execute("""
+            SELECT 
+                a.id, a.name, a.category, a.description, a.address, 
+                a.transport, a.mrt, a.lat, a.lng,
+                GROUP_CONCAT(i.url) AS images
+            FROM attractions a
+            LEFT JOIN images i ON a.id = i.attraction_id
+            WHERE a.id = %s
+            GROUP BY a.id
+        """, (attractionId,))
 
+        attraction = cursor.fetchone()
+        
         if attraction is None:
             return JSONResponse(
                 status_code=400,
                 content={"error": True, "message": "查無此景點編號"}
             )
 
-        # 加入圖片
-        cursor.execute("SELECT url FROM images WHERE attraction_id = %s", (attraction["id"],))
-        images = cursor.fetchall()
-        attraction["images"] = [img["url"] for img in images]
+
+        # 加入圖片 URL
+        attraction["images"] = attraction["images"].split(",") if attraction["images"] else []
 
         cursor.close()
         db.close()
