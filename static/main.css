@@ -15,41 +15,37 @@ body {
 @media (max-width: 599px) {
 
     /* Navigation Bar */
-    .nav-bar {
-        width: 100%;
-        min-width: 360px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px 0;
-    }
-
     .nav-content {
         width: 90%;
-        display: flex;
-        width: 360px;
+        /* 讓 Navbar 自適應寬度 */
+        max-width: none;
+        /* 取消 360px 限制 */
         height: 34px;
+        display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 10px;
+        padding: 0 5%;
+        /* 使用百分比 padding，確保不被擠壓 */
     }
 
     .nav-title {
-        font-size: 30px;
-        font-weight: 700;
-        color: #448899;
-        line-height: 34px;
-        letter-spacing: 0%;
-        width: 150px;
-        height: 34px;
+        flex-grow: 1;
+        /* 讓標題可以使用剩餘空間 */
+        text-align: left;
+        /* 保持標題靠左 */
+        font-size: 24px;
+        /* 減少字體大小，避免過度壓縮 */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .nav-btn {
-        width: auto;
-        height: 34px;
+        flex-shrink: 0;
+        /* 確保按鈕不會縮小過度 */
         display: flex;
-        padding: 10px;
-        align-items: center;
+        gap: 5px;
+        padding: 2px 5px;
     }
 
     .btn-booking {
