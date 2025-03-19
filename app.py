@@ -13,7 +13,7 @@ app=FastAPI()
 # 設置 CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500" , "http://13.211.187.91:8000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],  # 允許所有 HTTP 方法
     allow_headers=["*"],  # 允許所有標頭
