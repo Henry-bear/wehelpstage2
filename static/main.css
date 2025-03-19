@@ -16,23 +16,21 @@ body {
 
     /* Navigation Bar */
     .nav-content {
-        width: 90%;
-        /* 讓 Navbar 自適應寬度 */
+        width: 100vw;
+        /* 讓 Navbar 完全覆蓋視口 */
         max-width: none;
         /* 取消 360px 限制 */
         height: 34px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 5%;
-        /* 使用百分比 padding，確保不被擠壓 */
+        padding: 0 5vw;
+        /* 使用視口單位，確保 iOS Safari 正確顯示 */
     }
 
     .nav-title {
         flex-grow: 1;
         /* 讓標題可以使用剩餘空間 */
-        text-align: left;
-        /* 保持標題靠左 */
         font-size: 24px;
         /* 減少字體大小，避免過度壓縮 */
         white-space: nowrap;
@@ -66,7 +64,6 @@ body {
         grid-template-columns: 1fr;
         /* 一行一個 attraction-card */
         gap: 30px;
-        /* 使用 clamp() 讓寬度隨螢幕變動，最小值 360px、最大值 599px */
         width: clamp(360px, 95vw, 599px);
         margin: 0 auto;
     }
