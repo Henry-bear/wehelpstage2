@@ -85,7 +85,7 @@
     // ------------------------ Part 2-5: Fetch MRT Stations ------------------------
     async function fetchMRTStations() {
       try {
-        let response = await fetch("http://13.211.187.91/api/mrts");
+        let response = await fetch("http://13.211.187.91:8000/api/mrts");
         let data = await response.json();
 
         if (response.ok) {
@@ -142,7 +142,7 @@
       isFetching = true; // 設置請求中標誌
 
       try {
-        let url = `http://13.211.187.91/api/attractions?page=${page}`;
+        let url = `http://13.211.187.91:8000/api/attractions?page=${page}`;
         if (keyword) {
           url += `&keyword=${encodeURIComponent(keyword)}`;
         }
