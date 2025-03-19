@@ -127,7 +127,7 @@ body {
     }
 
     .nav-title {
-        font-size: 30px;
+        font-size: 28px;
         font-weight: 700;
         color: #448899;
         line-height: 34px;
@@ -149,7 +149,7 @@ body {
         height: 34px;
         font-family: "Noto Sans TC";
         font-weight: 500;
-        font-size: 16px;
+        font-size: 14px;
         background: none;
         border: none;
         outline: none;
@@ -162,7 +162,7 @@ body {
         height: 34px;
         font-family: "Noto Sans TC";
         font-weight: 500;
-        font-size: 16px;
+        font-size: 14px;
         background: none;
         border: none;
         outline: none;
