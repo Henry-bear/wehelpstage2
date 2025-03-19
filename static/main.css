@@ -19,64 +19,44 @@ body {
         width: 100%;
         min-width: 360px;
         display: flex;
-        justify-content: flex-start;
-        /* 左對齊，確保畫面對齊 */
+        justify-content: center;
         align-items: center;
         padding: 10px 0;
     }
 
     .nav-content {
         width: 100%;
-        max-width: 360px;
-        /* 改為 max-width，允許縮小 */
-        height: 34px;
         display: flex;
+        width: 360px;
+        height: 34px;
         justify-content: space-between;
         align-items: center;
         padding: 0 10px;
     }
 
     .nav-title {
-        font-size: 28px;
-        /* 稍微縮小字體 */
+        font-size: 30px;
         font-weight: 700;
         color: #448899;
         line-height: 34px;
-        min-width: 120px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        letter-spacing: 0%;
+        width: 150px;
+        height: 34px;
     }
 
     .nav-btn {
+        width: auto;
+        height: 34px;
         display: flex;
-        gap: 5px;
-        /* 按鈕間距 */
-        padding: 5px;
-        /* 減少 padding */
+        padding: 10px;
         align-items: center;
-        flex-shrink: 0;
-        /* 避免按鈕擠壓 */
     }
 
     .btn-booking {
         height: 34px;
         font-family: "Noto Sans TC";
         font-weight: 500;
-        font-size: 14px;
-        background: none;
-        border: none;
-        outline: none;
-        color: #666666;
-        line-height: 13.3px;
-        letter-spacing: 0%;
-    }
-
-    .btn-sign {
-        height: 34px;
-        font-family: "Noto Sans TC";
-        font-weight: 500;
-        font-size: 14px;
+        font-size: 16px;
         background: none;
         border: none;
         outline: none;
@@ -119,7 +99,7 @@ body {
     .nav-content {
         width: 100%;
         display: flex;
-        max-width: 360px;
+        width: 360px;
         height: 34px;
         justify-content: space-between;
         align-items: center;
@@ -127,7 +107,7 @@ body {
     }
 
     .nav-title {
-        font-size: 28px;
+        font-size: 30px;
         font-weight: 700;
         color: #448899;
         line-height: 34px;
@@ -138,10 +118,9 @@ body {
 
     .nav-btn {
         width: auto;
-        gap: 5px;
         height: 34px;
         display: flex;
-        padding: 5px;
+        padding: 10px;
         align-items: center;
     }
 
@@ -149,7 +128,7 @@ body {
         height: 34px;
         font-family: "Noto Sans TC";
         font-weight: 500;
-        font-size: 14px;
+        font-size: 16px;
         background: none;
         border: none;
         outline: none;
@@ -162,7 +141,7 @@ body {
         height: 34px;
         font-family: "Noto Sans TC";
         font-weight: 500;
-        font-size: 14px;
+        font-size: 16px;
         background: none;
         border: none;
         outline: none;
