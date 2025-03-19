@@ -342,6 +342,7 @@ body {
         padding-top: 9px;
         padding-bottom: 9px;
         padding-left: 15px;
+        padding-right: 0px;
     }
 
     .scroll-right {
@@ -354,6 +355,7 @@ body {
         padding-top: 9px;
         padding-bottom: 9px;
         padding-right: 15px;
+        padding-left: 0px;
     }
 
     /* attractions part */
@@ -637,6 +639,32 @@ body {
         padding: 5px 15px;
         font-size: 16px;
         cursor: pointer;
+    }
+
+    .scroll-left {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        width: 47px;
+        height: 50px;
+        padding-top: 9px;
+        padding-bottom: 9px;
+        padding-left: 15px;
+        padding-right: 0px;
+    }
+
+    .scroll-right {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        width: 47px;
+        height: 50px;
+        padding-top: 9px;
+        padding-bottom: 9px;
+        padding-right: 15px;
+        padding-left: 0px;
     }
 
     /* attractions part */
@@ -939,6 +967,7 @@ body {
         padding-top: 9px;
         padding-bottom: 9px;
         padding-left: 15px;
+        padding-right: 0px;
     }
 
     .scroll-right {
@@ -951,6 +980,7 @@ body {
         padding-top: 9px;
         padding-bottom: 9px;
         padding-right: 15px;
+        padding-left: 0px;
     }
 
     /* attractions part */
