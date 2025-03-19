@@ -19,37 +19,45 @@ body {
         width: 100%;
         min-width: 360px;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
+        /* 左對齊，確保畫面對齊 */
         align-items: center;
         padding: 10px 0;
     }
 
     .nav-content {
         width: 100%;
-        display: flex;
-        width: 360px;
+        max-width: 360px;
+        /* 改為 max-width，允許縮小 */
         height: 34px;
+        display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 0 10px;
     }
 
     .nav-title {
-        font-size: 30px;
+        font-size: 28px;
+        /* 稍微縮小字體 */
         font-weight: 700;
         color: #448899;
         line-height: 34px;
-        letter-spacing: 0%;
-        width: 150px;
-        height: 34px;
+        max-width: 150px;
+        /* 允許縮小 */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .nav-btn {
-        width: auto;
-        height: 34px;
         display: flex;
-        padding: 10px;
+        gap: 5px;
+        /* 按鈕間距 */
+        padding: 5px;
+        /* 減少 padding */
         align-items: center;
+        flex-shrink: 0;
+        /* 避免按鈕擠壓 */
     }
 
     .btn-booking {
@@ -99,7 +107,7 @@ body {
     .nav-content {
         width: 100%;
         display: flex;
-        width: 360px;
+        max-width: 360px;
         height: 34px;
         justify-content: space-between;
         align-items: center;
@@ -112,15 +120,16 @@ body {
         color: #448899;
         line-height: 34px;
         letter-spacing: 0%;
-        width: 150px;
+        max-width: 150px;
         height: 34px;
     }
 
     .nav-btn {
         width: auto;
+        gap: 5px;
         height: 34px;
         display: flex;
-        padding: 10px;
+        padding: 5px;
         align-items: center;
     }
 
