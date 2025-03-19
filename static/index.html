@@ -1,11 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Index</title>
+  <link rel="stylesheet" href="/static/main.css">
 </head>
+
 <body>
-  
+
+  <!-- Navigation Bar -->
+  <div class="nav-bar">
+    <div class="nav-content">
+      <div class="nav-title">台北一日遊</div>
+      <div class="nav-btn">
+        <button class="btn-booking">預定行程</button>
+        <button class="btn-sign">登入/註冊</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="slogan-content">
+      <div class="slogan-mid">
+        <div class="slogan">
+          <h1>輕鬆享受台北一日悠閒</h1>
+          <p>探索每個角落，體驗城市的深度旅遊行程</p>
+        </div>
+        <div class="search">
+          <div class="search-bar">
+            <input type="text" id="search-input" placeholder="輸入景點名稱查詢">
+            <button id="search-btn"><img class="icon-search" src="/static/icon_search.png" alt=""></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="main">
+    <div class="main-content">
+      <!-- MRT List Bar -->
+      <div class="list-bar">
+        <button class="scroll-left"><img src="/static/left.png" alt=""></button>
+        <div class="mrt-container">
+          <div class="mrt-list">
+            <!-- 這裡透過 fetch 導入 /api/mrts -->
+          </div>
+        </div>
+        <button class="scroll-right"><img src="/static/right.png" alt=""></button>
+      </div>
+
+      <!-- Attraction Cards -->
+      <div class="attractions">
+        <!-- 這裡透過 fetch 導入 /api/attractions -->
+        <div class="content">
+          <div class="attraction-card">
+            <div class="image-container">
+              <img src="/static/example.jpg" alt="">
+              <div class="overlay">
+                <span>景點名稱 1</span>
+              </div>
+            </div>
+            <div class="info-container">
+              <div class="mrt">忠孝復興</div>
+              <div class="category">公共藝術</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div>COPYRIGHT © 2021 台北一日遊</div>
+  </footer>
+
+  <!-- javascript -->
+  <script>
+    // ------------------------ Part 2-5: Fetch MRT Stations ------------------------
+    async function fetchMRTStations() {
+      try {
+        let response = await fetch("http://127.0.0.1:8000/api/mrts");
+        let data = await response.json();
+
+        if (response.ok) {
+          renderMRTStations(data.data);
+        } else {
+          console.error("獲取 MRT 資料失敗:", data.message);
+        }
+      } catch (error) {
+        console.error("發生錯誤:", error);
+      }
+    }
+
+    function renderMRTStations(stations) {
+      const mrtListContainer = document.querySelector(".mrt-list");
+      mrtListContainer.innerHTML = ""; // 清空舊資料
+
+      stations.forEach(station => {
+        const mrtItem = document.createElement("div");
+        mrtItem.classList.add("mrt-item");
+        mrtItem.textContent = station;
+        mrtListContainer.appendChild(mrtItem);
+
+        // 點擊事件
+        mrtItem.addEventListener("click", () => handleMRTClick(station));
+      });
+    }
+
+    function handleMRTClick(stationName) {
+      document.getElementById("search-input").value = stationName;
+      handleSearch();
+    }
+
+    // ------------------------ Part 2-4: Handle Search ------------------------
+    let currentKeyword = ""; // 目前搜尋的關鍵字
+
+    document.getElementById("search-btn").addEventListener("click", handleSearch);
+
+    function handleSearch() {
+      const keyword = document.getElementById("search-input").value.trim(); // 取得使用者輸入的關鍵字
+      if (!keyword) return; // 若輸入為空則不搜尋
+
+      currentKeyword = keyword; // 更新目前搜尋的關鍵字
+      nextPage = 0; // 重新初始化頁碼
+      document.querySelector(".content").innerHTML = ""; // 清空目前的景點列表
+      fetchAttractions(nextPage, currentKeyword); // 使用關鍵字請求 API
+    }
+
+    // ------------------------ Part 2-3: Fetch Attraction API (Load More) ------------------------
+    let nextPage = 0;  // 初始化 nextPage
+    let isFetching = false;  // 防止重複請求
+
+    async function fetchAttractions(page = 0, keyword = currentKeyword) {
+      if (isFetching) return; // 若正在請求中，則不再發送請求
+      isFetching = true; // 設置請求中標誌
+
+      try {
+        let url = `http://127.0.0.1:8000/api/attractions?page=${page}`;
+        if (keyword) {
+          url += `&keyword=${encodeURIComponent(keyword)}`;
+        }
+
+        let response = await fetch(url);
+        let data = await response.json();
+
+        if (response.ok) {
+          renderAttractions(data.data, page === 0);
+          nextPage = data.nextPage;
+        } else {
+          console.error("獲取資料失敗:", data.message);
+        }
+      } catch (error) {
+        console.error("發生錯誤:", error);
+      } finally {
+        isFetching = false; // 請求完成，重置標誌
+      }
+    }
+
+    function renderAttractions(attractions, isNewSearch = false) {
+      const attractionsContainer = document.querySelector(".content");
+
+      if (isNewSearch) {
+        attractionsContainer.innerHTML = ""; // 搜尋時清空舊資料
+      }
+
+      attractions.forEach(attraction => {
+        const attractionCard = document.createElement("div");
+        attractionCard.classList.add("attraction-card");
+
+        // 圖片區域
+        const imageContainer = document.createElement("div");
+        imageContainer.classList.add("image-container");
+
+        const img = document.createElement("img");
+        img.src = attraction.images[0]; // 使用 API 返回的圖片 URL（選擇第一張圖片）
+
+        // 等待圖片加載完成後再插入
+        img.onload = function () {
+          imageContainer.appendChild(img);
+        };
+
+        const overlay = document.createElement("div");
+        overlay.classList.add("overlay");
+        overlay.innerHTML = `<span>${attraction.name}</span>`; // 景點名稱
+        imageContainer.appendChild(overlay);
+
+        // 資訊區域
+        const infoContainer = document.createElement("div");
+        infoContainer.classList.add("info-container");
+
+        const mrtDiv = document.createElement("div");
+        mrtDiv.classList.add("mrt");
+        mrtDiv.textContent = attraction.mrt; // 捷運站名
+
+        const categoryDiv = document.createElement("div");
+        categoryDiv.classList.add("category");
+        categoryDiv.textContent = attraction.category; // 景點分類
+
+        infoContainer.appendChild(mrtDiv);
+        infoContainer.appendChild(categoryDiv);
+
+        attractionCard.appendChild(imageContainer);
+        attractionCard.appendChild(infoContainer);
+
+        attractionsContainer.appendChild(attractionCard);
+      });
+    }
+
+    // ------------------------ Part 2-2: Load Attractions on Page Load ------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchAttractions(nextPage);  // 頁面加載時載入第一頁資料
+
+      // 使用 IntersectionObserver 偵測滾動到頁底
+      const sentinel = document.createElement('div');
+      document.body.appendChild(sentinel);
+
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && nextPage !== null) {
+          fetchAttractions(nextPage, currentKeyword); // 加載下一頁的數據
+        }
+      }, { threshold: 1.0 });
+
+      observer.observe(sentinel);
+    });
+
+    // ------------------------ Part 2-1: Initial Setup on Page Load ------------------------
+    document.addEventListener("DOMContentLoaded", fetchMRTStations);
+
+    // ------------------------ Part 2-5: Scroll Functions ------------------------
+    const mrtList = document.querySelector(".mrt-list");
+    const scrollLeftBtn = document.querySelector(".scroll-left");
+    const scrollRightBtn = document.querySelector(".scroll-right");
+
+    // 向左滾動
+    scrollLeftBtn.addEventListener("click", () => {
+      mrtList.scrollBy({ left: -200, behavior: "smooth" });
+    });
+
+    // 向右滾動
+    scrollRightBtn.addEventListener("click", () => {
+      mrtList.scrollBy({ left: 200, behavior: "smooth" });
+    });
+  </script>
 </body>
+
 </html>

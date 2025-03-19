@@ -5,7 +5,19 @@ import mysql.connector
 import re
 from pydantic import BaseModel
 from typing import List, Optional
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 app=FastAPI()
+
+
+# 設置 CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500" , "http://13.211.187.91:8000"],
+    allow_credentials=True,
+    allow_methods=["*"],  # 允許所有 HTTP 方法
+    allow_headers=["*"],  # 允許所有標頭
+)
 
 # 連接 MySQL
 db = mysql.connector.connect(
@@ -139,6 +151,7 @@ def get_attractions(
                 GROUP BY a.id  
                 LIMIT %s OFFSET %s
             """
+
             cursor.execute(sql_query, (keyword, f"%{keyword}%", limit, offset))
         else:
             sql_query = """
@@ -278,3 +291,5 @@ def get_mrts():
         )
     
 
+# 設定靜態檔案資料夾
+app.mount("/static", StaticFiles(directory="static"), name="static")
