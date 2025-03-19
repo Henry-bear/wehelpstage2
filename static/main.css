@@ -16,22 +16,20 @@ body {
 
     /* Navigation Bar */
     .nav-content {
-        width: 90%;
+        width: 100%;
         /* 讓 Navbar 有彈性 */
-        max-width: none;
         height: 34px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 5%;
-        /* 使用百分比確保不擠壓 */
+        padding: 0 15px;
     }
 
     .nav-title {
         flex-grow: 1;
         /* 讓標題佔據剩餘空間 */
-        font-size: 22px;
-        /* 減少字體大小，避免過度佔據空間 */
+        font-size: 24px;
+        text-align: left;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -44,14 +42,27 @@ body {
         /* 確保按鈕不會縮小過度 */
         display: flex;
         gap: 5px;
-        padding: 2px 5px;
+        padding: 2px 3px;
     }
 
     .btn-booking {
         height: 34px;
         font-family: "Noto Sans TC";
         font-weight: 500;
-        font-size: 16px;
+        font-size: 14px;
+        background: none;
+        border: none;
+        outline: none;
+        color: #666666;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+    }
+
+    .btn-sign {
+        height: 34px;
+        font-family: "Noto Sans TC";
+        font-weight: 500;
+        font-size: 14px;
         background: none;
         border: none;
         outline: none;
