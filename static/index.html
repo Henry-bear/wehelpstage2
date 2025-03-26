@@ -13,7 +13,7 @@
   <!-- Navigation Bar -->
   <div class="nav-bar">
     <div class="nav-content">
-      <div class="nav-title">台北一日遊</div>
+      <a href="/static/index.html" class="nav-title">台北一日遊</a>
       <div class="nav-btn">
         <button class="btn-booking">預定行程</button>
         <button class="btn-sign">登入/註冊</button>
@@ -161,6 +161,11 @@
       attractions.forEach(attraction => {
         const attractionCard = document.createElement("div");
         attractionCard.classList.add("attraction-card");
+
+        // 點擊事件  前往景點詳細頁面
+        attractionCard.addEventListener("click", () => {
+          window.location.href = `/attraction/${attraction.id}`;
+        });
 
         // 圖片區域
         const imageContainer = document.createElement("div");

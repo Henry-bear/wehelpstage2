@@ -219,12 +219,14 @@ def get_attraction(attractionId: str):
         )
         cursor = db.cursor(dictionary=True)
 
+        cursor.execute("SET SESSION group_concat_max_len = 1000000;")
+
         # 修改 SQL： JOIN attractions 和 images
         cursor.execute("""
             SELECT 
                 a.id, a.name, a.category, a.description, a.address, 
                 a.transport, a.mrt, a.lat, a.lng,
-                GROUP_CONCAT(i.url) AS images
+                GROUP_CONCAT(i.url SEPARATOR '|||') AS images
             FROM attractions a
             LEFT JOIN images i ON a.id = i.attraction_id
             WHERE a.id = %s
@@ -241,7 +243,8 @@ def get_attraction(attractionId: str):
 
 
         # 加入圖片 URL
-        attraction["images"] = attraction["images"].split(",") if attraction["images"] else []
+        attraction["images"] = attraction["images"].split("|||") if attraction["images"] else []
+
 
         cursor.close()
         db.close()

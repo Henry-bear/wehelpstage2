@@ -12,6 +12,21 @@ body {
     min-height: 100vh;
 }
 
+.nav-divider {
+    border: none;
+    border-top: 1px solid #E8E8E8;
+    margin: 0;
+}
+
+.section-divider {
+    width: calc(100% - 20px);
+    max-width: 1920px;
+    margin: 40px auto;
+    border: 0;
+    border-top: 1px solid #e8e8e8;
+}
+
+
 @media (max-width: 599px) {
 
     /* Navigation Bar */
@@ -30,6 +45,10 @@ body {
         font-size: 24px;
         white-space: nowrap;
         overflow: hidden;
+        font-weight: 700;
+        color: #448899;
+        text-decoration: none;
+        cursor: pointer;
     }
 
     .nav-btn {
@@ -70,6 +89,35 @@ body {
         font-size: 16px;
         cursor: pointer;
     }
+
+
+    /* attraction-section */
+    .attraction-section {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .attraction-section__left {
+        height: 350px;
+    }
+
+    .attraction-section__left img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        display: block;
+    }
+
+    .carousel-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 20px;
+        color: #666666;
+        z-index: 10;
+    }
 }
 
 /* 360px手機版 */
@@ -104,6 +152,8 @@ body {
         letter-spacing: 0%;
         width: 150px;
         height: 34px;
+        text-decoration: none;
+        cursor: pointer;
     }
 
     .nav-btn {
@@ -442,7 +492,354 @@ body {
         padding: 40px 0px;
         font-size: 16px;
     }
+
+    /*========= attraction.html ===========*/
+    /* attraction section */
+
+    .attraction-section {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 10px;
+    }
+
+    .attraction-section__left {
+        height: 350px;
+        overflow: hidden;
+    }
+
+    .attraction-section__left img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .attraction-section__right {
+        width: 100%;
+        height: auto;
+        padding: 10px 10px;
+    }
+
+    /* 文字樣式 */
+    .attraction-section__title {
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 24px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 0px;
+    }
+
+    .attraction-section__subtitle {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding: 5px 0px;
+    }
+
+    /* 讓左邊區塊成為相對定位容器 */
+    .attraction-section__left {
+        position: relative;
+    }
+
+    /* 共用按鈕樣式 */
+    .section-scroll-left,
+    .section-scroll-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        opacity: 0.75;
+    }
+
+    /* 左／右按鈕位置 */
+    .section-scroll-left {
+        left: 10px;
+    }
+
+    .section-scroll-right {
+        right: 10px;
+    }
+
+    /* 按鈕圖示尺寸 */
+    .section-scroll-left img,
+    .section-scroll-right img {
+        display: block;
+        width: 36px;
+        height: 36px;
+    }
+
+    .carousel-indicators {
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 18px;
+        opacity: 0.75;
+    }
+
+    .indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: none;
+        background-color: #FFFFFF;
+        cursor: pointer;
+        opacity: 0.75;
+        gap: 10px;
+        padding-right: 6px;
+        padding-left: 6px;
+
+    }
+
+    .indicator.active {
+        background-color: #000000;
+        box-shadow: 0 0 0 1px #FFFFFF;
+    }
+
+
+    /*  attraction-section__card */
+    /*  (灰底區塊) */
+    .attraction-section__card {
+        background-color: #e8e8e8;
+        border-radius: 5px;
+        padding: 15px 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        padding: 20px;
+    }
+
+    .attraction-section__card-title {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 0px;
+    }
+
+    .attraction-section__card-desc {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 150%;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 15px 0px;
+    }
+
+    .attraction-section__card-field {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #666666;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+
+    }
+
+
+    .attraction-section__card-input {
+        width: 193px;
+        height: 35px;
+        padding: 5px 10px;
+        border: none;
+        font-size: 16px;
+        background-color: #FFFFFF;
+    }
+
+    .time-option {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        padding: 0 5px;
+    }
+
+    .time-option>span {
+        font-weight: 400;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .time-option input[type="radio"] {
+        appearance: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-color: #FFFFFF;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .time-option input[type="radio"]::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background-color: #448899;
+        transition: width .15s, height .15s;
+    }
+
+    .time-option input[type="radio"]:checked::after {
+        width: 18px;
+        height: 18px;
+    }
+
+
+
+    .attraction-section__card-price {
+        padding: 4px 5px;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .attraction-section__card-btn {
+        background-color: #448899;
+        color: #FFFFFF;
+        font-size: 19px;
+        font-weight: 400;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 154px;
+        height: 36px;
+        top: 225px;
+        left: 20px;
+        border-radius: 5px;
+        padding-top: 10px;
+        padding-right: 20px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .attraction-section__card-btn:hover {
+        opacity: 0.9;
+    }
+
+    .attraction-section__card-field-label {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .section-divider {
+        width: calc(100% - 20px);
+        max-width: 1920px;
+        margin: 40px auto;
+        border: 0;
+        border-top: 1px solid #e8e8e8;
+        padding: 0 10px;
+    }
+
+    /* attraction-info */
+
+    .attraction-info {
+        padding: 10px;
+        width: 100%;
+        text-align: left;
+        height: auto;
+    }
+
+    .attraction-description {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 130%;
+        letter-spacing: 0%;
+        padding-bottom: 20px;
+    }
+
+    .attraction-address,
+    .attraction-transport {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+        padding-bottom: 20px;
+    }
+
+    /* Label */
+    .attraction-address span,
+    .attraction-transport span {
+        color: #666666;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        display: block;
+        padding: 10px 0px;
+    }
+
+    .transport-detail {
+        margin: 0;
+        padding-bottom: 60px;
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+    }
+
+    .address-text {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+    }
+
+    .carousel-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 20px;
+        color: #666666;
+        z-index: 10;
+    }
 }
+
+
 
 @media (min-width: 600px) and (max-width: 1199px) {
 
@@ -466,11 +863,14 @@ body {
 
     .nav-title {
         font-size: 28px;
-        width: auto;
-        height: 34px;
-        color: #448899;
         font-weight: 700;
+        color: #448899;
         line-height: 34px;
+        letter-spacing: 0%;
+        width: 150px;
+        height: 34px;
+        text-decoration: none;
+        cursor: pointer;
     }
 
     .nav-btn {
@@ -679,13 +1079,383 @@ body {
     /* Footer */
     footer {
         width: 100%;
+        max-width: 100%;
         background-color: #757575;
         color: #FFFFFF;
         text-align: center;
         padding: 30px 0;
         font-size: 16px;
     }
+
+    /*========= attraction.html ===========*/
+    /* attraction section */
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 40px;
+    }
+
+    .attraction-section {
+        width: 100%;
+        height: 400px;
+        display: flex;
+        gap: 20px;
+        padding: 0 15px;
+        box-sizing: border-box;
+        max-width: 800px;
+    }
+
+    .attraction-section__right {
+        width: 50%;
+        padding: 10px 0px;
+    }
+
+    .attraction-section__left {
+        width: 50%;
+        height: 400px;
+        min-width: 300px;
+        overflow: hidden;
+        position: relative;
+    }
+
+
+
+    /* 左側：確保圖片填滿 */
+    .attraction-section__left img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* 右側背景 + 內邊距 */
+    .attraction-section__right {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: auto;
+        height: 400px;
+        left: 585px;
+    }
+
+    /* 文字樣式 */
+    .attraction-section__title {
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 24px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 0px;
+    }
+
+    .attraction-section__subtitle {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding: 5px 0px;
+    }
+
+
+    /* 讓左邊區塊成為相對定位容器 */
+    .attraction-section__left {
+        position: relative;
+    }
+
+    /* 共用按鈕樣式 */
+    .section-scroll-left,
+    .section-scroll-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        opacity: 0.75;
+    }
+
+    /* 左／右按鈕位置 */
+    .section-scroll-left {
+        left: 10px;
+    }
+
+    .section-scroll-right {
+        right: 10px;
+    }
+
+    /* 按鈕圖示尺寸 */
+    .section-scroll-left img,
+    .section-scroll-right img {
+        display: block;
+        width: 36px;
+        height: 36px;
+    }
+
+    .carousel-indicators {
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 18px;
+        opacity: 0.75;
+    }
+
+    .indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: none;
+        background-color: #FFFFFF;
+        cursor: pointer;
+        opacity: 0.75;
+        gap: 10px;
+        padding-right: 6px;
+        padding-left: 6px;
+
+    }
+
+    .indicator.active {
+        background-color: #000000;
+        box-shadow: 0 0 0 1px #FFFFFF;
+    }
+
+
+    /*  attraction-section__card */
+    /*  (灰底區塊) */
+    .attraction-section__card {
+        background-color: #e8e8e8;
+        border-radius: 5px;
+        padding: 15px 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        padding: 20px;
+    }
+
+    .attraction-section__card-title {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 0px;
+    }
+
+    .attraction-section__card-desc {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 120%;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 15px 0px;
+    }
+
+    .attraction-section__card-field {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #666666;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+
+    }
+
+
+    .attraction-section__card-input {
+        width: 193px;
+        height: 35px;
+        padding: 5px 10px;
+        border: none;
+        font-size: 16px;
+        background-color: #FFFFFF;
+    }
+
+    .time-option {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        padding: 0 5px;
+    }
+
+    .time-option>span {
+        font-weight: 400;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .time-option input[type="radio"] {
+        appearance: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-color: #FFFFFF;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .time-option input[type="radio"]::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background-color: #448899;
+        transition: width .15s, height .15s;
+    }
+
+    .time-option input[type="radio"]:checked::after {
+        width: 18px;
+        height: 18px;
+    }
+
+
+
+    .attraction-section__card-price {
+        padding: 4px 5px;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .attraction-section__card-btn {
+        background-color: #448899;
+        color: #FFFFFF;
+        font-size: 19px;
+        font-weight: 400;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 154px;
+        height: 36px;
+        top: 225px;
+        left: 20px;
+        border-radius: 5px;
+        padding-top: 10px;
+        padding-right: 20px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .attraction-section__card-btn:hover {
+        opacity: 0.9;
+    }
+
+    .attraction-section__card-field-label {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    /* attraction-info */
+
+    .attraction-info {
+        padding: 10px;
+        width: auto;
+        text-align: left;
+        height: auto;
+        max-width: 800px;
+    }
+
+    .attraction-description {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 130%;
+        letter-spacing: 0%;
+        padding-bottom: 20px;
+    }
+
+    .attraction-address,
+    .attraction-transport {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+        padding-bottom: 20px;
+    }
+
+    /* Label */
+    .attraction-address span,
+    .attraction-transport span {
+        color: #666666;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        display: block;
+        padding: 10px 0px;
+    }
+
+    .transport-detail {
+        margin: 0;
+        padding-bottom: 60px;
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+    }
+
+    .address-text {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+    }
+
+    .carousel-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 20px;
+        color: #666666;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.5);
+    }
 }
+
 
 
 /* 1200px ~ 1920px 桌面 / 大型設備 */
@@ -720,6 +1490,8 @@ body {
         letter-spacing: 0%;
         width: 150px;
         height: 34px;
+        text-decoration: none;
+        cursor: pointer;
     }
 
     .nav-btn {
@@ -1010,7 +1782,10 @@ body {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        /* 保證圖片不會變形 */
+    }
+
+    .image-container img:hover {
+        cursor: pointer;
     }
 
     /* 半透明背景標題 */
@@ -1071,5 +1846,378 @@ body {
         padding: 40px 0px;
         font-size: 16px;
         position: relative;
+    }
+
+
+    /*========= attraction.html ===========*/
+    /* attraction section */
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 40px;
+    }
+
+    .attraction-section {
+        width: 1200px;
+        height: 400px;
+        display: flex;
+        gap: 30px;
+        padding: 0 15px;
+        box-sizing: border-box;
+    }
+
+    .attraction-section__right {
+        flex: 1;
+        padding: 10px 0px;
+    }
+
+    .attraction-section__left {
+        flex: 1;
+        height: 400px;
+        overflow: hidden;
+        position: relative;
+    }
+
+
+    /* 左側：確保圖片填滿 */
+    .attraction-section__left img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* 右側背景 + 內邊距 */
+    .attraction-section__right {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 600px;
+        height: 400px;
+        left: 585px;
+    }
+
+    /* 文字樣式 */
+    .attraction-section__title {
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 24px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 0px;
+    }
+
+    .attraction-section__subtitle {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding: 5px 0px;
+    }
+
+
+    /* 讓左邊區塊成為相對定位容器 */
+    .attraction-section__left {
+        position: relative;
+    }
+
+    /* 共用按鈕樣式 */
+    .section-scroll-left,
+    .section-scroll-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        opacity: 0.75;
+    }
+
+    /* 左／右按鈕位置 */
+    .section-scroll-left {
+        left: 10px;
+    }
+
+    .section-scroll-right {
+        right: 10px;
+    }
+
+    /* 按鈕圖示尺寸 */
+    .section-scroll-left img,
+    .section-scroll-right img {
+        display: block;
+        width: 36px;
+        height: 36px;
+    }
+
+    .carousel-indicators {
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 18px;
+        opacity: 0.75;
+    }
+
+    .indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: none;
+        background-color: #FFFFFF;
+        cursor: pointer;
+        opacity: 0.75;
+        gap: 10px;
+        padding-right: 6px;
+        padding-left: 6px;
+
+    }
+
+    .indicator.active {
+        background-color: #000000;
+        box-shadow: 0 0 0 1px #FFFFFF;
+    }
+
+
+    /*  attraction-section__card */
+    /*  (灰底區塊) */
+    .attraction-section__card {
+        background-color: #e8e8e8;
+        border-radius: 5px;
+        padding: 15px 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        padding: 20px;
+    }
+
+    .attraction-section__card-title {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 0px;
+    }
+
+    .attraction-section__card-desc {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        margin: 15px 0px;
+    }
+
+    .attraction-section__card-field {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #666666;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+
+    }
+
+
+    .attraction-section__card-input {
+        width: 193px;
+        height: 35px;
+        padding: 5px 10px;
+        border: none;
+        font-size: 16px;
+        background-color: #FFFFFF;
+    }
+
+    .time-option {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        padding: 0 5px;
+    }
+
+    .time-option>span {
+        font-weight: 400;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .time-option input[type="radio"] {
+        appearance: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-color: #FFFFFF;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .time-option input[type="radio"]::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background-color: #448899;
+        transition: width .15s, height .15s;
+    }
+
+    .time-option input[type="radio"]:checked::after {
+        width: 18px;
+        height: 18px;
+    }
+
+
+
+    .attraction-section__card-price {
+        padding: 4px 5px;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .attraction-section__card-btn {
+        background-color: #448899;
+        color: #FFFFFF;
+        font-size: 19px;
+        font-weight: 400;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 154px;
+        height: 36px;
+        top: 225px;
+        left: 20px;
+        border-radius: 5px;
+        padding-top: 10px;
+        padding-right: 20px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .attraction-section__card-btn:hover {
+        opacity: 0.9;
+    }
+
+    .attraction-section__card-field-label {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    /* attraction-info */
+
+    .attraction-info {
+        padding: 10px;
+        width: 1200px;
+        text-align: left;
+        height: auto;
+    }
+
+    .attraction-description {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 130%;
+        letter-spacing: 0%;
+        padding-bottom: 20px;
+    }
+
+    .attraction-address,
+    .attraction-transport {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+        padding-bottom: 20px;
+    }
+
+    /* Label */
+    .attraction-address span,
+    .attraction-transport span {
+        color: #666666;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        display: block;
+        padding: 10px 0px;
+    }
+
+    .transport-detail {
+        margin: 0;
+        padding-bottom: 60px;
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+    }
+
+    .address-text {
+        color: #666666;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0%;
+    }
+
+    .section-divider {
+        width: 100%;
+        max-width: 1920px;
+        margin: 40px auto;
+        border: 0;
+        border-top: 1px solid #e8e8e8;
+        padding: 0 10px;
+    }
+
+    .carousel-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 20px;
+        color: #666666;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.5);
     }
 }

@@ -1,11 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Attraction</title>
+  <link rel="stylesheet" href="/static/main.css">
 </head>
+
 <body>
-  
+  <!-- Navigation Bar -->
+  <div class="nav-bar">
+    <div class="nav-content">
+      <a href="/static/index.html" class="nav-title">台北一日遊</a>
+      <div class="nav-btn">
+        <button class="btn-booking">預定行程</button>
+        <button class="btn-sign">登入/註冊</button>
+      </div>
+    </div>
+  </div>
+  <hr class="nav-divider">
+  <!-- section -->
+  <div class="container">
+    <!-- attraction-section 上方資訊區 -->
+    <section class="attraction-section">
+      <!-- 左邊資訊區 -->
+      <div class="attraction-section__left">
+        <!-- 圖片輪播 (carousel) -->
+        <div class="carousel-loading" id="carousel-loading">載入中...</div>
+        <img id="carousel-image" alt="景點照片" />
+        <button class="section-scroll-left"><img src="/static/left.png" alt=""></button>
+        <button class="section-scroll-right"><img src="/static/right.png" alt=""></button>
+        <!-- 小圓點 (Indicators) -->
+        <div class="carousel-indicators" id="carousel-indicators">
+          <button class="indicator active"></button>
+          <button class="indicator"></button>
+          <button class="indicator"></button>
+        </div>
+      </div>
+      <!-- 右邊資訊區 -->
+      <div class="attraction-section__right">
+        <h2 class="attraction-section__title"></h2>
+        <p class="attraction-section__subtitle"></p>
+        <div class="attraction-section__card">
+          <h3 class="attraction-section__card-title">訂購導覽行程</h3>
+          <p class="attraction-section__card-desc">以此景點為中心的一日行程，帶您探索城市角落故事</p>
+
+          <div class="attraction-section__card-field">
+            <label for="tour-date" class="attraction-section__card-field-label">選擇日期：</label>
+            <input type="date" id="tour-date" class="attraction-section__card-input">
+          </div>
+
+          <div class="attraction-section__card-field">
+            <span class="attraction-section__card-field-label">選擇時間：</span>
+            <label class="time-option">
+              <input type="radio" name="tour-time" value="2000" checked>
+              <span>上半天</span>
+            </label>
+            <label class="time-option">
+              <input type="radio" name="tour-time" value="2500">
+              <span>下半天</span>
+            </label>
+          </div>
+
+          <div class="attraction-section__card-field">
+            <span class="attraction-section__card-field-label">導覽費用：</span>
+            <span class="attraction-section__card-price" id="selected-price">新台幣 2000 元</span>
+          </div>
+
+          <button class="attraction-section__card-btn">開始預約行程</button>
+        </div>
+      </div>
+    </section>
+    <hr class="section-divider">
+    <!-- attraction-section 下方資訊區 -->
+    <section class="attraction-info">
+      <div class="attraction-description">
+      </div>
+      <div class="attraction-address">
+        <span>景點地址：</span>
+        <div class="address-text"></div>
+      </div>
+
+      <div class="attraction-transport">
+        <span>交通方式：</span>
+        <div class="transport-detail"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div>COPYRIGHT © 2021 台北一日遊</div>
+  </footer>
+
+  <!-- javascript   -->
+  <script>
+    // [按鈕] 更新 上半天、下半天 價格顯示
+    document.querySelectorAll('.time-option input').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const price = radio.value;  // 取得 input 的 value（2000 或 2500）
+        document.getElementById('selected-price').textContent = `新台幣 ${price} 元`;
+      });
+    });
+
+    //  圖片輪播功能
+    let imageList = [];  // 儲存所有圖片網址
+    let imageIndex = 0;  // 建立圖片索引
+
+    // 建立輪播圖與左右切換
+    function setupCarousel(images) {
+      imageList = images;
+      imageIndex = 0;
+      updateCarouselImage();  // 初始化圖片
+
+      // 建立 圖片下方小圓點  indicator 
+      const indicatorContainer = document.getElementById("carousel-indicators");
+      indicatorContainer.innerHTML = ""; // 清空原本圓點
+
+      // 每張圖片建立對應的圓點按鈕
+      images.forEach((_, i) => {
+        const btn = document.createElement("button");
+        btn.className = "indicator" + (i === 0 ? " active" : ""); // 第 0 張設為 active
+        btn.addEventListener("click", () => {
+          imageIndex = i;
+          updateCarouselImage(); // 點擊某圓點就顯示對應圖片
+        });
+        indicatorContainer.appendChild(btn);
+      });
+
+      // 左右切換按鈕綁定事件
+      document.querySelector(".section-scroll-left").onclick = () => {
+        imageIndex = (imageIndex - 1 + imageList.length) % imageList.length;
+        updateCarouselImage(); // 切換到上一張圖片
+      };
+
+      document.querySelector(".section-scroll-right").onclick = () => {
+        imageIndex = (imageIndex + 1) % imageList.length;
+        updateCarouselImage(); // 切換到下一張圖片
+      };
+    }
+
+    // 更新圖片與圓點狀態
+    function updateCarouselImage() {
+      const imgEl = document.getElementById("carousel-image");
+      const loadingEl = document.getElementById("carousel-loading");
+
+      // 顯示 loading，隱藏圖片
+      loadingEl.style.display = "block";
+      imgEl.style.display = "none";
+
+      // 圖片載入完成後再顯示
+      imgEl.onload = () => {
+        loadingEl.style.display = "none";  // 隱藏 loading
+        imgEl.style.display = "block";     // 顯示圖片
+      };
+
+      imgEl.src = imageList[imageIndex];
+      imgEl.alt = `景點圖片 ${imageIndex + 1}`;
+
+      // 更新所有圓點按鈕的 active 樣式
+      const indicators = document.querySelectorAll(".indicator");
+      indicators.forEach((el, i) => {
+        el.classList.toggle("active", i === imageIndex);  // 只有當前圖片對應圓點會亮
+      });
+    }
+
+    // ===============================
+    //       後端 API 載入景點資料
+    // ===============================
+    async function loadAttraction() {
+      try {
+        // 解析網址中的 ID
+        const pathParts = window.location.pathname.split("/");
+        const id = pathParts[pathParts.length - 1] || "1";
+
+        // 發送 API 請求
+        const url = `http://13.211.187.91:8000/api/attraction/${id}`;
+        const response = await fetch(url);
+        const result = await response.json();
+
+        const data = result.data;
+
+        // 渲染資料
+        document.querySelector(".attraction-section__title").textContent = data.name;
+        document.querySelector(".attraction-section__subtitle").textContent =
+          `${data.category} at ${data.mrt}`;
+
+        setupCarousel(data.images); // 建立輪播圖片
+
+        // 景點描述與交通資訊
+        document.querySelector(".attraction-description").textContent = data.description;
+        document.querySelector(".address-text").textContent = data.address;
+        document.querySelector(".transport-detail").textContent = data.transport;
+
+      } catch (err) {
+        console.error("載入景點失敗:", err);
+      }
+    }
+
+    // 網頁載入，執行資料載入
+    document.addEventListener("DOMContentLoaded", loadAttraction);
+
+
+
+
+  </script>
 </body>
+
 </html>
