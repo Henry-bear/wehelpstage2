@@ -387,22 +387,46 @@
     // 頁面載入時自動檢查登入狀態
     document.addEventListener("DOMContentLoaded", checkLoginStatus);
 
+
+    function showLoginModal() {
+      overlay.style.display = "flex";
+    }
     // 會員登入狀態檢查
-    function checkLoginStatus() {
+    async function checkLoginStatus() {
       const token = localStorage.getItem("token");      // 從 localStorage 拿出 token
       const signBtn = document.querySelector(".btn-sign");
 
-      if (token) {
-        // 如果 token 存在，代表已登入
-        signBtn.textContent = "登出";
-
-        // 點擊「登出」清除 token 並刷新頁面
-        signBtn.addEventListener("click", () => {
-          localStorage.removeItem("token");
-          location.reload(); // 登出後刷新頁面
+      try {
+        const res = await fetch("/api/user/auth", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
+
+        const result = await res.json();
+
+        if (result.data) {
+          // 如果 token 存在，代表已登入
+          signBtn.textContent = "登出";
+          signBtn.addEventListener("click", handleLogout);
+        } else {
+          //  token 無效  顯示「登入／註冊」
+          signBtn.textContent = "登入／註冊";
+          signBtn.addEventListener("click", showLoginModal);
+        }
+      } catch (error) {
+        console.error("登入狀態確認失敗：", error);
       }
     }
+
+    /* 登出流程 */
+    /* 清除 localStorage 裡的 token */
+    function handleLogout() {
+      localStorage.removeItem("token");
+      location.reload();
+    }
+
   </script>
 </body>
 
