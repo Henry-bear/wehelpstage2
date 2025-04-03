@@ -162,6 +162,7 @@ body {
         display: flex;
         padding: 10px;
         align-items: center;
+        cursor: pointer;
     }
 
     .btn-booking {
@@ -188,6 +189,7 @@ body {
         color: #666666;
         line-height: 13.3px;
         letter-spacing: 0%;
+        cursor: pointer;
     }
 
     /* Hero Section */
@@ -837,6 +839,110 @@ body {
         color: #666666;
         z-index: 10;
     }
+
+    .auth-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 80px;
+        z-index: 9999;
+    }
+
+    .auth-modal {
+        position: relative;
+        background: #FFFFFF;
+        border-radius: 8px;
+        width: 340px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .auth-decorator {
+        height: 10px;
+        background: linear-gradient(270deg, #337788 0%, #66AABB 100%);
+    }
+
+    .auth-main {
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        padding-top: 25px;
+        position: relative;
+    }
+
+    .auth-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 15px;
+        color: #666666;
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 24px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .auth-close {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 20px;
+        left: 300px;
+        cursor: pointer;
+    }
+
+    .auth-group {
+        padding: 10px 0px;
+    }
+
+    .auth-group input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    #auth-submit {
+        font-size: 19px;
+        background-color: #448899;
+        color: #FFFFFF;
+        border: none;
+        cursor: pointer;
+        font-weight: 400;
+        line-height: 16px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+        width: 310px;
+        height: 46;
+        border-radius: 5px;
+        padding-top: 10px;
+        padding-right: 20px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+    }
+
+    .auth-message {
+        color: red;
+        text-align: center;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .auth-footer {
+        text-align: center;
+        font-size: 14px;
+        padding: 16px;
+        color: #555;
+        cursor: pointer;
+    }
 }
 
 
@@ -891,6 +997,7 @@ body {
         outline: none;
         color: #666666;
         line-height: 20px;
+        cursor: pointer;
     }
 
     /* Hero Section */
@@ -1454,6 +1561,110 @@ body {
         z-index: 10;
         background: rgba(255, 255, 255, 0.5);
     }
+
+    .auth-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 80px;
+        z-index: 9999;
+    }
+
+    .auth-modal {
+        position: relative;
+        background: #FFFFFF;
+        border-radius: 8px;
+        width: 340px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .auth-decorator {
+        height: 10px;
+        background: linear-gradient(270deg, #337788 0%, #66AABB 100%);
+    }
+
+    .auth-main {
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        padding-top: 25px;
+        position: relative;
+    }
+
+    .auth-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 15px;
+        color: #666666;
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 24px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .auth-close {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 20px;
+        left: 300px;
+        cursor: pointer;
+    }
+
+    .auth-group {
+        padding: 10px 0px;
+    }
+
+    .auth-group input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    #auth-submit {
+        font-size: 19px;
+        background-color: #448899;
+        color: #FFFFFF;
+        border: none;
+        cursor: pointer;
+        font-weight: 400;
+        line-height: 16px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+        width: 310px;
+        height: 46;
+        border-radius: 5px;
+        padding-top: 10px;
+        padding-right: 20px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+    }
+
+    .auth-message {
+        color: red;
+        text-align: center;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .auth-footer {
+        text-align: center;
+        font-size: 14px;
+        padding: 16px;
+        color: #555;
+        cursor: pointer;
+    }
 }
 
 
@@ -1525,6 +1736,7 @@ body {
         color: #666666;
         line-height: 13.3px;
         letter-spacing: 0%;
+        cursor: pointer;
     }
 
     /* Hero Section */
@@ -2219,5 +2431,109 @@ body {
         color: #666666;
         z-index: 10;
         background: rgba(255, 255, 255, 0.5);
+    }
+
+    .auth-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 80px;
+        z-index: 9999;
+    }
+
+    .auth-modal {
+        position: relative;
+        background: #FFFFFF;
+        border-radius: 8px;
+        width: 340px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .auth-decorator {
+        height: 10px;
+        background: linear-gradient(270deg, #337788 0%, #66AABB 100%);
+    }
+
+    .auth-main {
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        padding-top: 25px;
+        position: relative;
+    }
+
+    .auth-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 15px;
+        color: #666666;
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 24px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .auth-close {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 20px;
+        left: 300px;
+        cursor: pointer;
+    }
+
+    .auth-group {
+        padding: 10px 0px;
+    }
+
+    .auth-group input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    #auth-submit {
+        font-size: 19px;
+        background-color: #448899;
+        color: #FFFFFF;
+        border: none;
+        cursor: pointer;
+        font-weight: 400;
+        line-height: 16px;
+        letter-spacing: 0%;
+        text-align: center;
+        vertical-align: middle;
+        width: 310px;
+        height: 46;
+        border-radius: 5px;
+        padding-top: 10px;
+        padding-right: 20px;
+        padding-bottom: 10px;
+        padding-left: 20px;
+    }
+
+    .auth-message {
+        color: red;
+        text-align: center;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .auth-footer {
+        text-align: center;
+        font-size: 14px;
+        padding: 16px;
+        color: #555;
+        cursor: pointer;
     }
 }

@@ -94,6 +94,40 @@
     <div>COPYRIGHT © 2021 台北一日遊</div>
   </footer>
 
+  <!--  登入 / 註冊視窗結構 -->
+  <div class="auth-overlay" style="display:none">
+    <div class="auth-modal">
+      <!-- decorator bar 裝飾條 -->
+      <div class="auth-decorator"></div>
+
+      <!-- 主內容區塊 -->
+      <div class="auth-main">
+        <!-- 關閉按鈕放在 auth-main 右上角 -->
+        <img src="/static/icon_close.png" class="auth-close" alt="關閉">
+
+        <!-- 標題 -->
+        <div class="auth-header">
+          <span id="form-switch">登入會員帳號</span>
+        </div>
+
+        <!-- 表單區塊 -->
+        <form id="auth-form">
+          <div class="auth-group">
+            <input type="text" id="name" placeholder="輸入姓名" style="display: none">
+            <input type="text" id="username" placeholder="輸入電子信箱">
+            <input type="password" id="password" placeholder="輸入密碼">
+          </div>
+          <div class="auth-message" id="auth-message"></div>
+          <button type="submit" id="auth-submit">登入帳戶</button>
+          <div class="auth-footer">
+            <span id="switch-to-register">還沒有帳戶？點此註冊</span>
+            <span id="switch-to-login" style="display:none">已經有帳戶了？點此登入</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- javascript   -->
   <script>
     // [按鈕] 更新 上半天、下半天 價格顯示
@@ -202,9 +236,155 @@
     // 網頁載入，執行資料載入
     document.addEventListener("DOMContentLoaded", loadAttraction);
 
+    // ------------------------ Part 4 登入/註冊彈窗控制 ------------------------
+
+    // 選取彈窗整體容器
+    const overlay = document.querySelector(".auth-overlay");
+    // 選取登入/註冊的表單元素
+    const form = document.getElementById("auth-form");
+    // 選取使用者輸入的 姓名欄位（註冊用，預設隱藏）
+    const nameInput = document.getElementById("name");
+    // 選取使用者輸入的 帳號（email）欄位
+    const usernameInput = document.getElementById("username");
+    // 選取使用者輸入的 密碼 欄位
+    const passwordInput = document.getElementById("password");
+    // 選取顯示錯誤或提示訊息的元素（紅色錯誤提示 or 綠色正確提示）
+    const messageBox = document.getElementById("auth-message");
+    // 選取送出按鈕（根據登入或註冊模式改變文字）
+    const submitBtn = document.getElementById("auth-submit");
+    // 記錄目前是否為登入模式（true = 登入, false = 註冊）
+    let isLogin = true;
 
 
+    // 登入/註冊按鈕（打開彈跳視窗）
+    const signBtn = document.querySelector(".btn-sign");
+    signBtn.addEventListener("click", () => {
+      // display 設為 flex（從 display: none 變成可見）
+      overlay.style.display = "flex";
+    });
 
+    // 關閉按鈕（關閉彈窗並清空表單）
+    const closeBtn = document.querySelector(".auth-close");
+    closeBtn.addEventListener("click", () => {
+      overlay.style.display = "none";      // 隱藏整個彈窗
+      form.reset();                        // 清空所有輸入欄位
+      messageBox.textContent = "";         // 清空訊息顯示區
+    });
+
+    // 切換註冊模式
+    const switchToRegister = document.getElementById("switch-to-register");
+    const switchToLogin = document.getElementById("switch-to-login");
+
+    switchToRegister.addEventListener("click", () => {
+      isLogin = false;                              // 設定為註冊模式
+      nameInput.style.display = "block";            // 顯示姓名欄位
+      submitBtn.textContent = "註冊新帳戶";           // 改變送出按鈕文字
+      switchToRegister.style.display = "none";      // 隱藏 切到註冊 提示
+      switchToLogin.style.display = "block";        // 顯示 切到登入 提示
+    });
+
+    // 切換登入模式
+    switchToLogin.addEventListener("click", () => {
+      isLogin = true;                               // 設定為登入模式
+      nameInput.style.display = "none";             // 隱藏姓名欄位
+      submitBtn.textContent = "登入";                // 改變送出按鈕文字
+      switchToRegister.style.display = "block";     // 顯示 切到註冊 提示
+      switchToLogin.style.display = "none";         // 隱藏 切到登入 提示 
+    });
+
+    // 表單送出：登入或註冊 API 呼叫
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault(); // 防止表單預設跳頁
+      // 取得使用者輸入值
+      const name = nameInput.value;
+      const username = usernameInput.value;
+      const password = passwordInput.value;
+      // 檢查 email 格式是否正確
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(username)) {
+        messageBox.textContent = "請輸入正確的電子信箱格式";
+        messageBox.style.color = "red";
+        return;
+      }
+      // 根據目前狀態決定要呼叫哪個 API 與組成請求 body
+      const url = isLogin ? "/api/user/auth" : "/api/user";
+      const body = isLogin
+        ? { username, password }          // 登入傳帳密
+        : { name, username, password };   // 註冊多加 name
+
+      //呼叫 後端 API  fetch 發送 POST 請求
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+
+        // API 呼叫成功（res.ok 為 true）
+        // 登入成功 
+        if (res.ok) {
+          if (isLogin) {
+            localStorage.setItem("token", data.token);   // 儲存 JWT 
+            location.reload();                           // 刷新頁面（讓 navbar 替換成登出）
+          }
+          // 註冊成功  顯示綠色訊息提示
+          else {
+            messageBox.textContent = "註冊成功，請重新登入";
+            messageBox.style.color = "green";
+          }
+        } else {
+          messageBox.textContent = data.message || "請輸入正確的電子信箱格式";
+        }
+      } catch (err) {
+        messageBox.textContent = "伺服器錯誤，請稍後再試";
+      }
+    });
+
+    // 頁面載入時自動檢查登入狀態
+    document.addEventListener("DOMContentLoaded", checkLoginStatus);
+
+
+    function showLoginModal() {
+      overlay.style.display = "flex";
+    }
+    // 會員登入狀態檢查
+    async function checkLoginStatus() {
+      const token = localStorage.getItem("token");      // 從 localStorage 拿出 token
+      const signBtn = document.querySelector(".btn-sign");
+
+      try {
+        const res = await fetch("/api/user/auth", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const result = await res.json();
+
+        if (result.data) {
+          // 如果 token 存在，代表已登入
+          signBtn.textContent = "登出";
+          signBtn.addEventListener("click", handleLogout);
+        } else {
+          //  token 無效  顯示「登入／註冊」
+          signBtn.textContent = "登入／註冊";
+          signBtn.addEventListener("click", showLoginModal);
+        }
+      } catch (error) {
+        console.error("登入狀態確認失敗：", error);
+      }
+    }
+
+    /* 登出流程 */
+    /* 清除 localStorage 裡的 token */
+    function handleLogout() {
+      localStorage.removeItem("token");
+      location.reload();
+    }
   </script>
 </body>
 
