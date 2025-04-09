@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Request, Header
+from fastapi import FastAPI, Query, Request, Header, Body
 from fastapi.responses import FileResponse, JSONResponse
 import json
 import mysql.connector
@@ -131,6 +131,13 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
      username: str
      password: str
+
+# 預定行程資料結構
+class BookingCreate(BaseModel):
+     attractionId: int
+     date: str
+     time: str
+     price: int
 
 
 # API Endpoints
@@ -398,5 +405,150 @@ def check_auth(Authorization: Optional[str] = Header(None)):
     except Exception:
          # 解碼失敗，代表未登入
         return {"data": None}
+    
+# Booking API Endpoints
+# 預訂行程 API
+@app.post("/api/booking")
+def create_booking(booking: BookingCreate = Body(...),Authorization: Optional[str] = Header(None)):
+    if not Authorization:
+        return JSONResponse(status_code=403, content={"error": True, "message": "未登入使用者"})
+    try:
+        #解析 JWT
+        scheme, token = Authorization.split()
+        if scheme.lower() != "bearer":
+            return JSONResponse(status_code=403, content={"error": True, "message": "授權格式錯誤"})
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        member_id = payload["id"]
+        # 連接資料庫
+        db = mysql.connector.connect(
+            host="127.0.0.1",
+            user="root",
+            password="12345678",
+            database="taipei_attractions"
+        )
+        cursor = db.cursor()
+
+        # 檢查是否已有預定 → 有的話更新，沒有的話插入
+        cursor.execute("SELECT id FROM booking WHERE member_id = %s", (member_id,))
+        existing = cursor.fetchone()
+
+        # 假設有預定 → 更新預約資料
+        if existing:
+            cursor.execute("""
+                UPDATE booking SET attraction_id=%s, date=%s, time=%s, price=%s
+                WHERE member_id=%s          
+            """, (booking.attractionId, booking.date, booking.time, booking.price, member_id))
+        # 假設無預定 → 新增預約資料
+        else:
+             cursor.execute("""
+                INSERT INTO booking (member_id, attraction_id, date, time, price)
+                VALUES (%s, %s, %s, %s, %s)            
+            """, (member_id, booking.attractionId, booking.date, booking.time, booking.price))
+        db.commit()
+        return {"ok": True}
+    
+    except Exception as e:
+         print("預訂失敗:", e)
+         return JSONResponse(status_code=500, content={"error": True, "message":"伺服器錯誤"})
+    finally:
+         cursor.close()
+         db.close()
+# 查詢預訂行程 API
+@app.get("/api/booking")
+def get_booking(Authorization: Optional[str] = Header(None)):
+    if not Authorization:
+          return {"data": None}
+    try:
+        #解析 JWT ，取得會員資料
+        scheme, token = Authorization.split()
+        if scheme.lower() != "bearer":
+            return {"data": None}
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        member_id = payload["id"]
+        member_name = payload["name"]
+        member_email = payload["username"]
+
+        # 連接資料庫
+        db = mysql.connector.connect(
+            host="127.0.0.1",
+            user="root",
+            password="12345678",
+            database="taipei_attractions"
+        )
+        cursor = db.cursor(dictionary=True)
+
+        # 查詢會員預訂資料 JOIN attractions 取得景點資料與圖片(name, address, image)
+        cursor.execute("""
+            SELECT
+                b.date, b.time, b.price,
+                a.id AS attraction_id, a.name, a.address,
+                (SELECT url FROM images WHERE attraction_id = a.id LIMIT 1) AS image
+            FROM booking b
+            JOIN attractions a ON b.attraction_id = a.id
+            WHERE b.member_id = %s
+        """, (member_id,))
+        result = cursor.fetchone()
+        # 如果無預訂資料 回傳 null
+        if not result:
+             return {"data": None}
+        # 如果有資料回傳 所需資料
+        return {
+            "data": {
+                "attraction": {
+                    "id": result["attraction_id"],
+                    "name": result["name"],
+                    "address": result["address"],
+                    "image": result["image"]
+                },
+                "date": str(result["date"]),
+                "time": result["time"],
+                "price": result["price"],
+                "contact": {
+                    "name": member_name,
+                    "email": member_email
+                }
+            }
+        }
+    except Exception as e:
+        print("取得預定資料錯誤：", e)
+        return JSONResponse(status_code=500, content={"error": True, "message": "伺服器錯誤"})
+
+    finally:
+        cursor.close()
+        db.close()
+# 刪除預訂行程 API
+@app.delete("/api/booking")
+def delete_booking(Authorization: Optional[str] = Header (None)):
+    if not Authorization:
+          return JSONResponse(status_code=403, content={"error": True, "message": "未登入使用者"})
+    try:
+        # 解析 JWT，取得會員資料
+        scheme, token = Authorization.split()
+        if scheme.lower() != "bearer":
+            return JSONResponse(status_code=403, content={"error": True, "message": "授權格式錯誤"})
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        member_id = payload["id"]
+        # 連接資料庫
+        db = mysql.connector.connect(
+             host="127.0.0.1",
+             user="root",
+             password="12345678",
+             database="taipei_attractions"
+        )
+        cursor = db.cursor()
+        #  刪除會員的預訂資料（
+        cursor.execute("DELETE FROM booking WHERE member_id = %s", (member_id,))
+        db.commit()
+
+        #  回傳成功訊息
+        return {"ok": True}
+    
+    except Exception as e:
+        print("刪除預定失敗：", e)
+        return JSONResponse(status_code=500, content={"error": True, "message": "伺服器錯誤"})
+
+    finally:
+        cursor.close()
+        db.close()
 # 設定靜態檔案資料夾
 app.mount("/static", StaticFiles(directory="static"), name="static")
