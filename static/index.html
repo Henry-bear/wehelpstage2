@@ -13,7 +13,7 @@
   <!-- Navigation Bar -->
   <div class="nav-bar">
     <div class="nav-content">
-      <a href="/static/index.html" class="nav-title">台北一日遊</a>
+      <a href="/" class="nav-title">台北一日遊</a>
       <div class="nav-btn">
         <button class="btn-booking">預定行程</button>
         <button class="btn-sign">登入/註冊</button>
@@ -187,6 +187,16 @@
       }
     }
 
+    // 用來觀察每張卡片是否滑入畫面
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("slide-in-up");
+          cardObserver.unobserve(entry.target); // 只播一次動畫
+        }
+      });
+    }, { threshold: 0.1 });
+
     function renderAttractions(attractions, isNewSearch = false) {
       const attractionsContainer = document.querySelector(".content");
 
@@ -194,9 +204,10 @@
         attractionsContainer.innerHTML = ""; // 搜尋時清空舊資料
       }
 
-      attractions.forEach(attraction => {
+      attractions.forEach((attraction, index) => {
         const attractionCard = document.createElement("div");
         attractionCard.classList.add("attraction-card");
+
 
         // 點擊事件  前往景點詳細頁面
         attractionCard.addEventListener("click", () => {
@@ -239,10 +250,13 @@
         attractionCard.appendChild(infoContainer);
 
         attractionsContainer.appendChild(attractionCard);
+
+        cardObserver.observe(attractionCard);
       });
     }
 
     // ------------------------ Part 2-2: Load Attractions on Page Load ------------------------
+
     document.addEventListener("DOMContentLoaded", () => {
       fetchAttractions(nextPage);  // 頁面加載時載入第一頁資料
 
@@ -250,13 +264,13 @@
       const sentinel = document.createElement('div');
       document.body.appendChild(sentinel);
 
-      const observer = new IntersectionObserver((entries) => {
+      const sentinelObserver = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && nextPage !== null) {
           fetchAttractions(nextPage, currentKeyword); // 加載下一頁的數據
         }
       }, { threshold: 1.0 });
 
-      observer.observe(sentinel);
+      sentinelObserver.observe(sentinel);
     });
 
     // ------------------------ Part 2-1: Initial Setup on Page Load ------------------------
@@ -389,7 +403,15 @@
 
 
     function showLoginModal() {
+      const overlay = document.querySelector(".auth-overlay");
+      const modal = document.querySelector(".auth-modal");
+
       overlay.style.display = "flex";
+
+      // 觸發動畫
+      modal.style.animation = "none"; // 重置動畫
+      modal.offsetHeight; // 強制重排
+      modal.style.animation = "fadeInScale 0.3s ease forwards";
     }
     // 會員登入狀態檢查
     async function checkLoginStatus() {
@@ -426,6 +448,40 @@
       localStorage.removeItem("token");
       location.reload();
     }
+
+    /* Booking 預定行程 */
+    // 綁定預訂按鈕事件
+    document.querySelector(".btn-booking").addEventListener("click", () => {
+      const token = localStorage.getItem("token");
+      // 驗證 token   沒有 → 開啟登入視窗，阻止進入預定頁面
+      if (!token) {
+        showLoginModal();
+        return;
+      }
+      // 有 token → 呼叫 /api/user/auth 驗證會員狀態
+      fetch("/api/user/auth", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        // 伺服器回應後，轉換成 JSON 物件
+        .then(res => res.json())
+        // 解析 JSON 成功後，處理回傳資料
+        .then(data => {
+          // 若 data 存在，表示登入驗證成功 → 導向預定頁面
+          if (data.data) {
+            window.location.href = "/booking";
+            // 若 data 為 null 表示 token 無效或過期 → 顯示登入彈窗
+          } else {
+            showLoginModal();
+          }
+        })
+        // 若 API 請求過程中發生錯誤（網路問題、伺服器錯誤等）→ 顯示登入彈窗
+        .catch(() => {
+          showLoginModal();
+        });
+    });
 
   </script>
 </body>

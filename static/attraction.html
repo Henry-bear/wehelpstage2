@@ -12,7 +12,7 @@
   <!-- Navigation Bar -->
   <div class="nav-bar">
     <div class="nav-content">
-      <a href="/static/index.html" class="nav-title">台北一日遊</a>
+      <a href="/" class="nav-title">台北一日遊</a>
       <div class="nav-btn">
         <button class="btn-booking">預定行程</button>
         <button class="btn-sign">登入/註冊</button>
@@ -127,7 +127,13 @@
       </div>
     </div>
   </div>
-
+  <!-- 提醒視窗 -->
+  <div class="date-alert-overlay" id="dateAlert">
+    <div class="date-alert-box">
+      <p>請先選擇日期</p>
+      <button id="closeDateAlert">知道了</button>
+    </div>
+  </div>
   <!-- javascript   -->
   <script>
     // [按鈕] 更新 上半天、下半天 價格顯示
@@ -192,6 +198,17 @@
 
       imgEl.src = imageList[imageIndex];
       imgEl.alt = `景點圖片 ${imageIndex + 1}`;
+
+
+      // [新增] 預載「下一張」與「上一張」圖片
+      const preloadIndices = [
+        (imageIndex + 1) % imageList.length,
+        (imageIndex - 1 + imageList.length) % imageList.length
+      ];
+      preloadIndices.forEach(index => {
+        const preloadImg = new Image();
+        preloadImg.src = imageList[index];
+      });
 
       // 更新所有圓點按鈕的 active 樣式
       const indicators = document.querySelectorAll(".indicator");
@@ -348,8 +365,17 @@
 
 
     function showLoginModal() {
+      const overlay = document.querySelector(".auth-overlay");
+      const modal = document.querySelector(".auth-modal");
+
       overlay.style.display = "flex";
+
+      // 觸發動畫
+      modal.style.animation = "none"; // 重置動畫
+      modal.offsetHeight; // 強制重排
+      modal.style.animation = "fadeInScale 0.3s ease forwards";
     }
+
     // 會員登入狀態檢查
     async function checkLoginStatus() {
       const token = localStorage.getItem("token");      // 從 localStorage 拿出 token
@@ -385,6 +411,100 @@
       localStorage.removeItem("token");
       location.reload();
     }
+
+    /* Booking 預約行程*/
+    // 綁定預訂按鈕事件
+    document.querySelector(".attraction-section__card-btn").addEventListener("click", async () => {
+      const token = localStorage.getItem("token");
+      // 驗證 token   沒有 → 開啟登入視窗，阻止進入預定頁面
+      if (!token) {
+        showLoginModal();
+        return;
+      }
+      // 取得景點 ID 
+      const pathParts = window.location.pathname.split("/");
+      const attractionId = parseInt(pathParts[pathParts.length - 1]);
+
+      // 取得日期
+      const date = document.getElementById("tour-date").value;
+
+      // 取得時間
+      const timeInput = document.querySelector('input[name="tour-time"]:checked');
+      const price = parseInt(timeInput.value); // 金額用來判斷 早上or下午
+      const time = price === 2000 ? "morning" : "afternoon";
+
+      // 使用者未選擇日期 => 執行 showDateAlert 函式
+      if (!date) {
+        showDateAlert();
+        return;
+      }
+
+      // 呼叫 /api/booking API，送出預約資訊（POST）
+      try {
+        const res = await fetch("/api/booking", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ attractionId, date, time, price }),
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          // 預約成功後導向 booking 頁面
+          window.location.href = "/booking";
+        } else {
+          alert(result.message || "預約失敗");
+        }
+
+      } catch (err) {
+        console.error("送出預約失敗:", err);
+        alert("伺服器錯誤，請稍後再試");
+      }
+    });
+
+    // 綁定預訂按鈕事件
+    document.querySelector(".btn-booking").addEventListener("click", () => {
+      const token = localStorage.getItem("token");
+      // 驗證 token   沒有 → 開啟登入視窗，阻止進入預定頁面
+      if (!token) {
+        showLoginModal();
+        return;
+      }
+      // 有 token → 呼叫 /api/user/auth 驗證會員狀態
+      fetch("/api/user/auth", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        // 伺服器回應後，轉換成 JSON 物件
+        .then(res => res.json())
+        // 解析 JSON 成功後，處理回傳資料
+        .then(data => {
+          // 若 data 存在，表示登入驗證成功 → 導向預定頁面
+          if (data.data) {
+            window.location.href = "/booking";
+            // 若 data 為 null 表示 token 無效或過期 → 顯示登入彈窗
+          } else {
+            showLoginModal();
+          }
+        })
+        // 若 API 請求過程中發生錯誤（網路問題、伺服器錯誤等）→ 顯示登入彈窗
+        .catch(() => {
+          showLoginModal();
+        });
+    });
+    // 提醒視窗
+    function showDateAlert() {
+      const overlay = document.getElementById("dateAlert");
+      overlay.style.display = "flex";
+    }
+
+    document.getElementById("closeDateAlert").addEventListener("click", () => {
+      document.getElementById("dateAlert").style.display = "none";
+    });
   </script>
 </body>
 

@@ -26,6 +26,85 @@ body {
     border-top: 1px solid #e8e8e8;
 }
 
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.date-alert-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    justify-content: center;
+    align-items: center;
+}
+
+.date-alert-box {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    animation: fadeInScale 0.3s ease forwards;
+    font-size: 16px;
+    color: #666666;
+    text-align: center;
+}
+
+.date-alert-box button {
+    margin-top: 15px;
+    padding: 8px 20px;
+    background-color: #448899;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* index.html 動畫：淡入 + 向上滑入 */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(60px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in-up {
+    opacity: 0;
+    animation: slideInUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* attractionCard Hover */
+.attraction-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.attraction-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.overlay span {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.attraction-card:hover .overlay span {
+    transform: translateY(-4px);
+    opacity: 1;
+}
 
 @media (max-width: 599px) {
 
@@ -483,8 +562,6 @@ body {
     }
 
 
-
-
     /* Footer */
     footer {
         width: 100%;
@@ -493,6 +570,7 @@ body {
         text-align: center;
         padding: 40px 0px;
         font-size: 16px;
+        margin-top: auto;
     }
 
     /*========= attraction.html ===========*/
@@ -943,6 +1021,205 @@ body {
         color: #555;
         cursor: pointer;
     }
+
+    /* Booking.html */
+    /* 外層容器 */
+    .booking-container {
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
+        padding: 40px 0px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .booking-section,
+    .contact-section,
+    .payment-section {
+        width: auto;
+        padding: 0 10px;
+        position: relative;
+    }
+
+    .section-content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* 分隔線 */
+    .section-divider {
+        width: calc(100% - 20px);
+        height: 1px;
+        background-color: #e0e0e0;
+        border: none;
+        margin: 40px auto;
+    }
+
+    .booking-title {
+        width: auto;
+        margin-bottom: 24px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 19px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding: 0 10px;
+    }
+
+    /* 行程內容區塊 */
+    .booking-content {
+        display: flex;
+        align-items: flex-start;
+        position: relative;
+        flex-wrap: nowrap;
+        flex-direction: column;
+    }
+
+    .booking-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+        padding-bottom: 30px;
+    }
+
+    .booking-info {
+        display: flex;
+        text-align: left;
+        font-size: 16px;
+        line-height: 1.8;
+        color: #666666;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .booking-attraction-name {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        color: #448899;
+        padding-bottom: 20px;
+        display: block;
+    }
+
+    .booking-info-item {
+        display: flex;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        color: #666666;
+        padding-bottom: 15px;
+        display: block;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .booking-info-value {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .booking-delete-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        align-self: flex-end;
+    }
+
+
+    .booking-empty {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+
+    /* 表單組合：label 和 input 同行 */
+    .form-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group label {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .form-group input {
+        width: 200px;
+        padding: 8px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    /* 備註提示 */
+    .form-note {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    /* 確認付款區塊（右下角） */
+    .booking-confirm {
+        width: auto;
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 20px;
+        padding-right: 10px;
+    }
+
+    .booking-total {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        text-align: right;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .submit-order-btn {
+        background-color: #448899;
+        color: #FFFFFF;
+        padding: 12px 24px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .section-title {
+        font-weight: 700;
+        font-size: 19px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding-bottom: 20px;
+    }
+
 }
 
 
@@ -1665,6 +1942,207 @@ body {
         color: #555;
         cursor: pointer;
     }
+
+    /* Booking.html */
+    /* 外層容器 */
+    .booking-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .booking-section,
+    .contact-section,
+    .payment-section {
+        width: auto;
+        padding: 0 10px;
+        position: relative;
+    }
+
+    .section-content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* 分隔線 */
+    .section-divider {
+        width: 100%;
+        height: 1px;
+        background-color: #e0e0e0;
+        border: none;
+        margin: 32px 0;
+    }
+
+    .booking-title {
+        width: auto;
+        margin-bottom: 24px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 19px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    /* 行程內容區塊 */
+    .booking-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        position: relative;
+        flex-wrap: nowrap;
+        flex-direction: row;
+    }
+
+    .booking-image {
+        width: 250px;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .booking-info {
+        display: flex;
+        flex: 1;
+        text-align: left;
+        font-size: 16px;
+        line-height: 1.8;
+        color: #666666;
+        min-width: 0;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 170px;
+    }
+
+    .booking-attraction-name {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        color: #448899;
+        padding-bottom: 20px;
+        display: block;
+    }
+
+    .booking-info-item {
+        display: flex;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        color: #666666;
+        padding-bottom: 10px;
+        display: block;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .booking-info-value {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .booking-delete-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+
+    .booking-empty {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+
+    /* 表單組合：label 和 input 同行 */
+    .form-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group label {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .form-group input {
+        width: 200px;
+        padding: 8px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    /* 備註提示 */
+    .form-note {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    /* 確認付款區塊（右下角） */
+    .booking-confirm {
+        width: auto;
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 20px;
+    }
+
+    .booking-total {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        text-align: right;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .submit-order-btn {
+        background-color: #448899;
+        color: #FFFFFF;
+        padding: 12px 24px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .section-title {
+        font-weight: 700;
+        font-size: 19px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding-bottom: 20px;
+    }
+
 }
 
 
@@ -1723,6 +2201,7 @@ body {
         color: #666666;
         line-height: 13.3px;
         letter-spacing: 0%;
+        cursor: pointer;
     }
 
     .btn-sign {
@@ -2535,5 +3014,208 @@ body {
         padding: 16px;
         color: #555;
         cursor: pointer;
+    }
+
+    /* Booking.html */
+    /* 外層容器 */
+    .booking-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* section 內部通用 980px */
+    .booking-section,
+    .contact-section,
+    .payment-section {
+        width: 1000px;
+        padding: 0 10px;
+        align-self: center;
+        /* 讓區塊在 container 中置中 */
+        position: relative;
+    }
+
+    .section-content {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* 分隔線 */
+    .section-divider {
+        width: 100%;
+        height: 1px;
+        background-color: #e0e0e0;
+        border: none;
+        margin: 32px 0;
+    }
+
+    .booking-title {
+        width: 1000px;
+        margin-bottom: 30px;
+        text-align: left;
+        align-self: center;
+        font-weight: 700;
+        font-size: 19px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    /* 行程內容區塊 */
+    .booking-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        position: relative;
+        flex-wrap: nowrap;
+        flex-direction: row;
+    }
+
+    .booking-image {
+        width: 250px;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .booking-info {
+        display: flex;
+        flex: 1;
+        text-align: left;
+        font-size: 16px;
+        line-height: 1.8;
+        color: #666666;
+        min-width: 0;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 170px;
+    }
+
+    .booking-attraction-name {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        color: #448899;
+        padding-bottom: 20px;
+        display: block;
+    }
+
+    .booking-info-item {
+        display: flex;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding-bottom: 10px;
+    }
+
+    .booking-info-value {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .booking-delete-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0px;
+    }
+
+    .booking-empty {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+
+    /* 表單組合：label 和 input 同行 */
+    .form-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group label {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .form-group input {
+        width: 200px;
+        padding: 8px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    /* 備註提示 */
+    .form-note {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    /* 確認付款區塊（右下角） */
+    .booking-confirm {
+        width: 980px;
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        align-self: center;
+        gap: 20px;
+    }
+
+    .booking-total {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        text-align: right;
+        vertical-align: middle;
+        color: #666666;
+    }
+
+    .submit-order-btn {
+        background-color: #448899;
+        color: #FFFFFF;
+        padding: 12px 24px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .section-title {
+        font-weight: 700;
+        font-size: 19px;
+        line-height: 16px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding-bottom: 20px;
     }
 }
