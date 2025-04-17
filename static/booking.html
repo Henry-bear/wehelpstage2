@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Booking</title>
   <link rel="stylesheet" href="/static/main.css">
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.14.0"></script>
 </head>
 
 <body>
@@ -15,7 +16,7 @@
       <a href="/" class="nav-title">台北一日遊</a>
       <div class="nav-btn">
         <button class="btn-booking">預定行程</button>
-        <button class="btn-sign">登入/註冊</button>
+        <button class="btn-sign">登入&nbsp;/&nbsp;註冊</button>
       </div>
     </div>
   </div>
@@ -92,18 +93,19 @@
       <div class="section-content">
         <div class="form-group">
           <label for="card-number">卡片號碼：</label>
-          <input id="card-number" type="text" placeholder="**** **** **** ****">
+          <div id="card-number" class="tpfield" placeholder="**** **** **** ****"></div>
         </div>
         <div class="form-group">
-          <label for="card-expiry">過期時間：</label>
-          <input id="card-expiry" type="text" placeholder="MM / YY">
+          <label for="card-expiration-date">有效年限：</label>
+          <div id="card-expiration-date" class="tpfield" placeholder="MM / YY"></div>
         </div>
         <div class="form-group">
-          <label for="card-cvv">驗證密碼：</label>
-          <input id="card-cvv" type="text" placeholder="CVV">
+          <label for="card-ccv">安全碼：</label>
+          <div id="card-ccv" class="tpfield" placeholder="CCV"></div>
         </div>
       </div>
     </section>
+
 
     <hr class="section-divider">
 
@@ -120,6 +122,23 @@
   <footer>
     <div>COPYRIGHT © 2021 台北一日遊</div>
   </footer>
+
+
+  <!-- 手機號碼未填提醒視窗 -->
+  <div class="date-alert-overlay" id="phoneAlert" style="display:none;">
+    <div class="date-alert-box">
+      <p>請輸入手機號碼</p>
+      <button id="closePhoneAlert">知道了</button>
+    </div>
+  </div>
+
+  <!-- 付款欄位未填提醒視窗 -->
+  <div class="date-alert-overlay" id="cardAlert" style="display:none;">
+    <div class="date-alert-box">
+      <p>請完整填寫卡號、有效年限與安全碼</p>
+      <button id="closeCardAlert">知道了</button>
+    </div>
+  </div>
 
   <!--  登入 / 註冊視窗結構 -->
   <div class="auth-overlay" style="display:none">
@@ -155,6 +174,9 @@
     </div>
   </div>
   <script>
+    // 用來儲存目前預約的景點 ID
+    let attractionId = null;
+
     // 選取彈窗整體容器
     const overlay = document.querySelector(".auth-overlay");
     // 選取登入/註冊的表單元素
@@ -263,6 +285,17 @@
     // 頁面載入時自動檢查登入狀態
     document.addEventListener("DOMContentLoaded", checkLoginStatus);
 
+
+    // 關閉信用卡提醒視窗
+    document.getElementById("closeCardAlert").addEventListener("click", () => {
+      document.getElementById("cardAlert").style.display = "none";
+    });
+
+
+    // 關閉手機提醒視窗
+    document.getElementById("closePhoneAlert").addEventListener("click", () => {
+      document.getElementById("phoneAlert").style.display = "none";
+    });
 
     function showLoginModal() {
       overlay.style.display = "flex";
@@ -386,6 +419,8 @@
           return;
         }
 
+        attractionId = data.attraction.id;
+
         // 有預約資料就顯示所有 section
         document.querySelector(".contact-section").style.display = "block";
         document.querySelector(".payment-section").style.display = "block";
@@ -462,6 +497,95 @@
         .catch(() => {
           showLoginModal();
         });
+    });
+
+    /* ========================== TapPay & Order API ============================== */
+    // 初始化 TapPay SDK (使用測試金鑰與 sandbox 模式)
+    TPDirect.setupSDK(159788, 'app_SzOeCRSskGQL7JrQKm3k904dN5pL0wJ9qLCAXfJY92UhroWNwn0Pg5fM82ej', 'sandbox');
+
+    // 設定信用卡輸入欄位（number / expirationDate / cvv）
+    TPDirect.card.setup({
+      fields: {
+        number: { element: '#card-number', placeholder: '**** **** **** ****' },
+        expirationDate: { element: '#card-expiration-date', placeholder: 'MM / YY' },
+        ccv: { element: '#card-ccv', placeholder: 'CCV' }
+      },
+      styles: {
+        'input': { 'color': 'black' },
+        ':focus': { 'color': '#666666' }
+      }
+    });
+
+    // 綁定「確認付款」按鈕
+    document.querySelector(".submit-order-btn").addEventListener("click", async () => {
+      const token = localStorage.getItem("token");
+
+      // 驗證信用卡欄位
+      const tappayStatus = TPDirect.card.getTappayFieldsStatus();
+      if (tappayStatus.canGetPrime === false) {
+        document.getElementById("cardAlert").style.display = "flex";
+        return;
+      }
+
+      // 取得 TapPay Prime（代表一次性信用卡授權憑證）
+      TPDirect.card.getPrime(async function (result) {
+        console.log("TapPay getPrime result:", result);
+        if (result.status !== 0) {
+          alert("取得付款資訊失敗，請確認卡號是否正確");
+          return;
+        }
+        const prime = result.card.prime;
+
+        // 驗證手機號碼欄位
+        const phone = document.getElementById("contact-phone").value;
+        if (!phone.trim()) {
+          document.getElementById("phoneAlert").style.display = "flex";
+          return;
+        }
+        // 組合訂單資料 （從畫面取得）
+        const date = document.getElementById("booking-date").textContent;
+        const timeText = document.getElementById("booking-time").textContent;
+        const time = timeText.includes("早上") ? "morning" : "afternoon";
+        const price = parseInt(document.getElementById("total-price").textContent);
+        const name = document.getElementById("contact-name").value;
+        const email = document.getElementById("contact-email").value;
+
+        // 呼叫 後端 /api/orders => 建立訂單與金流交易
+        try {
+          const res = await fetch("/api/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              prime,
+              order: {
+                attractionId,
+                date,
+                time,
+                price
+              },
+              contact: {
+                name,
+                email,
+                phone
+              }
+            })
+          });
+          const result = await res.json();
+
+          // 如果成功付款 => 導向 thankyou.html  加上訂單編號
+          if (result.data && result.data.payment === true) {
+            window.location.href = `/thankyou?number=${result.data.number}`;
+          } else {
+            alert("付款失敗：" + (result.message || "請稍後再試"));
+          }
+
+        } catch (err) {
+          console.error("送出訂單錯誤:", err);
+        }
+      });
     });
 
   </script>
