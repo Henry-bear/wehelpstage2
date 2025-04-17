@@ -5,11 +5,17 @@ import mysql.connector
 import re
 from datetime import datetime, timedelta, timezone
 import bcrypt
-import jwt
+import jwt, uuid
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
+import os
+import requests
+import random
+import string
+load_dotenv()
 app=FastAPI()
 
 
@@ -139,6 +145,50 @@ class BookingCreate(BaseModel):
      time: str
      price: int
 
+# 聯絡人資訊資料結構
+class ContactInfo(BaseModel):
+     name: str
+     email: EmailStr
+     phone: str
+
+# 訂單資料結構
+class OrderRequest(BaseModel):
+     prime: str
+     order: BookingCreate
+     contact: ContactInfo
+
+
+
+# === TapPay 金流串接函式 ===
+def pay_by_prime(prime, amount, contact_name, email, phone):
+    url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+
+    headers={
+        "Content-Type": "application/json",
+        "x-api-key": os.getenv("TAPPAY_PARTNER_KEY")
+     }
+    payload={
+          "prime": prime,
+          "partner_key": os.getenv("TAPPAY_PARTNER_KEY"),
+          "merchant_id": os.getenv("TAPPAY_MERCHANT_ID"),
+          "amount": amount,
+          "currency": "TWD",
+          "details": "台北一日遊付款",
+          "cardholder": {
+            "phone_number": phone,
+            "name": contact_name,
+            "email": email
+        },
+        "remember": False
+     }
+    response = requests.post(url, json=payload, headers=headers)
+    return response.json()
+
+# 產生訂單編號函式
+def generate_order_number():
+    today = datetime.now().strftime("%Y%m%d")  # ex 20250417
+    rand = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))  # ex "A8F1Z9"
+    return f"ORD{today}-{rand}"
 
 # API Endpoints
 @app.get("/api/attractions", responses={
@@ -550,5 +600,76 @@ def delete_booking(Authorization: Optional[str] = Header (None)):
     finally:
         cursor.close()
         db.close()
+
+# Order API 
+@app.post("/api/orders")
+def create_order(order_request: OrderRequest, Authorization: str = Header(None)):
+    cursor = None
+    db = None
+    try:
+        # JWT 驗證
+        scheme, token = Authorization.split()
+        if scheme.lower() != "bearer":
+            return JSONResponse(status_code=403, content={"error": True, "message": "授權格式錯誤"})
+
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        member_id = payload["id"]
+
+        # 建立訂單號
+        order_number = generate_order_number()
+
+        # 資料庫連線
+        db = mysql.connector.connect(
+            host="127.0.0.1", user="root", password="12345678", database="taipei_attractions"
+        )
+        cursor = db.cursor()
+
+        order = order_request.order
+        contact = order_request.contact
+
+        # Step 1 建立 UNPAID 訂單
+        cursor.execute("""
+            INSERT INTO orders (
+                member_id, attraction_id, date, time, price,
+                contact_name, contact_email, contact_phone,
+                status, order_number
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'UNPAID', %s)
+        """, (
+            member_id, order.attractionId, order.date, order.time, order.price,
+            contact.name, contact.email, contact.phone, order_number
+        ))
+        db.commit()
+
+        # Step 2: 呼叫 TapPay 金流 API
+        result = pay_by_prime(order_request.prime, order.price, contact.name, contact.email, contact.phone)
+
+        # 如果付款成功 更新 orders table => 'PAID'
+        if result["status"] == 0:
+            rec_trade_id = result["rec_trade_id"]
+            cursor.execute("""
+                UPDATE orders SET status='PAID', tappay_rec_trade_id=%s
+                WHERE order_number=%s
+            """, (rec_trade_id, order_number))
+            db.commit()
+            payment_success = True
+        else:
+            payment_success = False
+
+        return {
+            "data": {
+                "number": order_number,
+                "payment": payment_success
+            }
+        }
+    except Exception as e:
+        print("建立訂單失敗：", e)
+        return JSONResponse(status_code=500, content={"error": True, "message": "伺服器錯誤"})
+
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
+
 # 設定靜態檔案資料夾
 app.mount("/static", StaticFiles(directory="static"), name="static")

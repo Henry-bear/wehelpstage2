@@ -1220,6 +1220,56 @@ body {
         padding-bottom: 20px;
     }
 
+    .tpfield {
+        width: 200px;
+        height: 35px;
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        background-color: #fff;
+    }
+
+    /* thankyou.html */
+    .thankyou-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .thankyou-title {
+        font-weight: 700;
+        font-size: 24px;
+        color: #666666;
+        margin-bottom: 30px;
+    }
+
+    .thankyou-info {
+        display: flex;
+        flex-direction: column;
+        font-weight: 600;
+        gap: 20px;
+        font-size: 16px;
+        color: #448899;
+        padding-bottom: 20px;
+    }
+
+    .thankyou-info-item {
+        display: flex;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding-bottom: 10px;
+        padding: 10px 0px;
+    }
 }
 
 
@@ -2143,6 +2193,46 @@ body {
         padding-bottom: 20px;
     }
 
+    /* thankyou.html */
+    .thankyou-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .thankyou-title {
+        font-weight: 700;
+        font-size: 24px;
+        color: #666666;
+        margin-bottom: 30px;
+    }
+
+    .thankyou-info {
+        display: flex;
+        flex-direction: column;
+        font-weight: 600;
+        gap: 20px;
+        font-size: 16px;
+        color: #448899;
+        padding-bottom: 20px;
+    }
+
+    .thankyou-info-item {
+        display: flex;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding-bottom: 10px;
+        padding: 10px 0px;
+    }
 }
 
 
@@ -3218,4 +3308,56 @@ body {
         color: #666666;
         padding-bottom: 20px;
     }
+
+    .tpfield {
+        width: 200px;
+        height: 35px;
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        background-color: #fff;
+    }
+
+    /* thankyou.html */
+    .thankyou-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .thankyou-title {
+        font-weight: 700;
+        font-size: 24px;
+        color: #666666;
+        margin-bottom: 30px;
+    }
+
+    .thankyou-info {
+        display: flex;
+        flex-direction: column;
+        font-weight: 600;
+        gap: 20px;
+        font-size: 16px;
+        color: #448899;
+        padding-bottom: 20px;
+    }
+
+    .thankyou-info-item {
+        display: flex;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 13.3px;
+        letter-spacing: 0%;
+        vertical-align: middle;
+        color: #666666;
+        padding-bottom: 10px;
+        padding: 10px 0px;
+    }
+
 }
