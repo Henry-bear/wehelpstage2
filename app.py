@@ -650,6 +650,9 @@ def create_order(order_request: OrderRequest, Authorization: str = Header(None))
                 UPDATE orders SET status='PAID', tappay_rec_trade_id=%s
                 WHERE order_number=%s
             """, (rec_trade_id, order_number))
+
+            # 付款成功後刪除 booking 資料
+            cursor.execute("DELETE FROM booking WHERE member_id = %s", (member_id,))
             db.commit()
             payment_success = True
         else:

@@ -400,7 +400,6 @@
 
         const result = await res.json();
         const data = result.data;
-        attractionId = data.attraction.id;
 
         // 沒有預約資料，就顯示提示 & 隱藏底下區塊
         if (!data) {
@@ -419,6 +418,8 @@
 
           return;
         }
+
+        attractionId = data.attraction.id;
 
         // 有預約資料就顯示所有 section
         document.querySelector(".contact-section").style.display = "block";
