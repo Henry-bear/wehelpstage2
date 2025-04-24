@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member</title>
+    <link rel="stylesheet" href="/static/main.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <div class="nav-content">
+            <a href="/" class="nav-title">台北一日遊</a>
+            <div class="nav-btn">
+                <button class="btn-booking">預定行程</button>
+                <button class="btn-sign">登入&nbsp;/&nbsp;註冊</button>
+            </div>
+        </div>
+    </div>
+    <hr class="nav-divider">
+    <!-- Member Section -->
+    <div class="member-container">
+        <section class="member-section">
+            <h2 id="welcome-text">歡迎回來！</h2>
+            <br>
+            <div class="member-info">
+                <h3 class="section-title">會員資料：</h3>
+                <div class="avatar-display" style="margin-bottom: 10px;">
+                    <img id="memberAvatar" src="" alt="會員大頭貼"
+                        style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 2px solid #ccc; display: none;" />
+                </div>
+                <p>姓名：<span id="member-name"></span>
+                    <button id="edit-name-btn">✏️</button>
+                </p>
+                <div id="edit-name-group" style="display:none;">
+                    <input type="text" id="edit-name-input" maxlength="20" />
+                    <button id="save-name-btn">儲存</button>
+                    <button id="cancel-name-btn">取消</button>
+                </div>
+
+                <p>Email：<span id="member-email"></span></p>
+            </div>
+            <!-- 上傳大頭貼區塊 -->
+            <div class="avatar-upload-section" style="margin-top: 20px;">
+                <p class="section-title">大頭貼：
+                    <input type="file" id="avatarInput" accept="image/*" style="display: none; width: auto;" />
+                    <button id="chooseFileBtn">選擇圖片</button>
+                    <button id="uploadAvatarBtn">上傳</button>
+                </p>
+                <div id="avatarPreview" style="margin-top:10px;">
+                    <img id="avatarImage" src="" alt="預覽大頭貼"
+                        style="width:100px; height:100px; object-fit:cover; display:none; border-radius: 50%; border: 1px solid #ccc;" />
+                </div>
+            </div>
+            <hr class="section-divider">
+            <h3 class="section-title">我的歷史訂單：</h3>
+            <div id="order-history" class="order-list"></div>
+
+            <div id="load-more-container" style="text-align:center; margin-top: 20px;">
+                <button id="load-more-btn" style="display: none;">載入更多</button>
+            </div>
+        </section>
+    </div>
+
+
+    <!-- Footer -->
+    <footer>
+        <div>COPYRIGHT © 2025 台北一日遊</div>
+    </footer>
+
+
+    <!--  登入 / 註冊視窗結構 -->
+    <div class="auth-overlay" style="display:none">
+        <div class="auth-modal">
+            <!-- decorator bar 裝飾條 -->
+            <div class="auth-decorator"></div>
+
+            <!-- 主內容區塊 -->
+            <div class="auth-main">
+                <!-- 關閉按鈕放在 auth-main 右上角 -->
+                <img src="/static/icon_close.png" class="auth-close" alt="關閉">
+
+                <!-- 標題 -->
+                <div class="auth-header">
+                    <span id="form-switch">登入會員帳號</span>
+                </div>
+
+                <!-- 表單區塊 -->
+                <form id="auth-form">
+                    <div class="auth-group">
+                        <input type="text" id="name" placeholder="輸入姓名" style="display: none">
+                        <input type="text" id="username" placeholder="輸入電子信箱">
+                        <input type="password" id="password" placeholder="輸入密碼">
+                    </div>
+                    <div class="auth-message" id="auth-message"></div>
+                    <button type="submit" id="auth-submit">登入帳戶</button>
+                    <div class="auth-footer">
+                        <span id="switch-to-register">還沒有帳戶？點此註冊</span>
+                        <span id="switch-to-login" style="display:none">已經有帳戶了？點此登入</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- 修改姓名未填提示視窗 -->
+    <div class="date-alert-overlay" id="nameAlert" style="display:none;">
+        <div class="date-alert-box">
+            <p>請輸入至少兩個字</p>
+            <button id="closeNameAlert">知道了</button>
+        </div>
+    </div>
+    <!-- 上傳大頭貼提示視窗 -->
+    <div class="date-alert-overlay" id="avatarAlert" style="display:none;">
+        <div class="date-alert-box">
+            <p id="avatarAlertText">請選擇一張圖片！</p>
+            <button id="closeAvatarAlert">ＯＫ</button>
+        </div>
+    </div>
+    <script>
+
+        // 選取彈窗整體容器
+        const overlay = document.querySelector(".auth-overlay");
+        // 選取登入/註冊的表單元素
+        const form = document.getElementById("auth-form");
+        // 選取使用者輸入的 姓名欄位（註冊用，預設隱藏）
+        const nameInput = document.getElementById("name");
+        // 選取使用者輸入的 帳號（email）欄位
+        const usernameInput = document.getElementById("username");
+        // 選取使用者輸入的 密碼 欄位
+        const passwordInput = document.getElementById("password");
+        // 選取顯示錯誤或提示訊息的元素（紅色錯誤提示 or 綠色正確提示）
+        const messageBox = document.getElementById("auth-message");
+        // 選取送出按鈕（根據登入或註冊模式改變文字）
+        const submitBtn = document.getElementById("auth-submit");
+        // 記錄目前是否為登入模式（true = 登入, false = 註冊）
+        let isLogin = true;
+
+
+        // 登入/註冊按鈕（打開彈跳視窗）
+        const signBtn = document.querySelector(".btn-sign");
+
+        // 關閉按鈕（關閉彈窗並清空表單）
+        const closeBtn = document.querySelector(".auth-close");
+        closeBtn.addEventListener("click", () => {
+            overlay.style.display = "none";      // 隱藏整個彈窗
+            form.reset();                        // 清空所有輸入欄位
+            messageBox.textContent = "";         // 清空訊息顯示區
+        });
+
+        // 切換註冊模式
+        const switchToRegister = document.getElementById("switch-to-register");
+        const switchToLogin = document.getElementById("switch-to-login");
+
+        switchToRegister.addEventListener("click", () => {
+            isLogin = false;                              // 設定為註冊模式
+            nameInput.style.display = "block";            // 顯示姓名欄位
+            submitBtn.textContent = "註冊新帳戶";           // 改變送出按鈕文字
+            switchToRegister.style.display = "none";      // 隱藏 切到註冊 提示
+            switchToLogin.style.display = "block";        // 顯示 切到登入 提示
+        });
+
+        // 切換登入模式
+        switchToLogin.addEventListener("click", () => {
+            isLogin = true;                               // 設定為登入模式
+            nameInput.style.display = "none";             // 隱藏姓名欄位
+            submitBtn.textContent = "登入";                // 改變送出按鈕文字
+            switchToRegister.style.display = "block";     // 顯示 切到註冊 提示
+            switchToLogin.style.display = "none";         // 隱藏 切到登入 提示 
+        });
+
+        // 表單送出：登入或註冊 API 呼叫
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault(); // 防止表單預設跳頁
+            // 取得使用者輸入值
+            const name = nameInput.value;
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            // 檢查 email 格式是否正確
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(username)) {
+                messageBox.textContent = "請輸入正確的電子信箱格式";
+                messageBox.style.color = "red";
+                return;
+            }
+            // 根據目前狀態決定要呼叫哪個 API 與組成請求 body
+            const url = isLogin ? "/api/user/auth" : "/api/user";
+            const body = isLogin
+                ? { username, password }          // 登入傳帳密
+                : { name, username, password };   // 註冊多加 name
+
+            //呼叫 後端 API  fetch 發送 POST 請求
+            try {
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await res.json();
+
+                // API 呼叫成功（res.ok 為 true）
+                // 登入成功 
+                if (res.ok) {
+                    if (isLogin) {
+                        localStorage.setItem("token", data.token);   // 儲存 JWT 
+                        location.reload();                           // 刷新頁面（讓 navbar 替換成登出）
+                    }
+                    // 註冊成功  顯示綠色訊息提示
+                    else {
+                        messageBox.textContent = "註冊成功，請重新登入";
+                        messageBox.style.color = "green";
+                    }
+                } else {
+                    messageBox.textContent = data.message || "請輸入正確的電子信箱格式";
+                }
+            } catch (err) {
+                messageBox.textContent = "伺服器錯誤，請稍後再試";
+            }
+        });
+
+        function showLoginModal() {
+            overlay.style.display = "flex";
+        }
+        // 會員登入狀態檢查
+        async function checkLoginStatus() {
+            const token = localStorage.getItem("token");
+            const signBtn = document.querySelector(".btn-sign");
+            try {
+                const res = await fetch("/api/user/auth", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const result = await res.json();
+
+                if (result.data) {
+                    // 如果 token 存在，代表已登入
+                    signBtn.textContent = "登出";
+                    signBtn.onclick = () => handleLogout();
+                } else {
+                    //  token 無效  顯示「登入／註冊」
+                    signBtn.textContent = "登入／註冊";
+                    signBtn.onclick = () => showLoginModal();
+                }
+            } catch (error) {
+                console.error("登入狀態確認失敗：", error);
+            }
+        }
+
+        /* 登出流程 */
+        /* 清除 localStorage 裡的 token */
+        function handleLogout() {
+            localStorage.removeItem("token");
+            location.reload();
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await checkLoginStatus();
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/";
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/user/auth", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const result = await res.json();
+                if (!result.data) {
+                    window.location.href = "/";
+                    return;
+                }
+
+                // 自訂上傳按鈕觸發 input file
+                document.getElementById("chooseFileBtn").addEventListener("click", () => {
+                    document.getElementById("avatarInput").click();
+                });
+
+                // 驗證成功，顯示會員資料
+                document.getElementById("member-name").textContent = result.data.name;
+                document.getElementById("member-email").textContent = result.data.username;
+                document.getElementById("welcome-text").textContent = `👋  歡迎回來，${result.data.name}！`;
+
+                // 顯示大頭貼（如果有）
+                if (result.data.avatar_url) {
+                    const memberAvatar = document.getElementById("memberAvatar");
+                    memberAvatar.src = result.data.avatar_url;
+                    memberAvatar.style.display = "block";
+                }
+                // 替換 navbar 為「預定行程 + 登出」
+                const navBtn = document.querySelector(".nav-btn");
+                navBtn.innerHTML = `
+                     <button id="to-booking" class="btn-booking">預定行程</button>
+                     <button id="logout" class="btn-sign">登出</button>
+                        `;
+                document.getElementById("to-booking").addEventListener("click", () => {
+                    window.location.href = "/booking";
+                });
+                document.getElementById("logout").addEventListener("click", () => {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
+                });
+
+                // 載入歷史訂單 API 
+                orderPage = 0;
+                await loadOrderHistory(token);
+
+            } catch (error) {
+                console.error("登入狀態檢查失敗:", error);
+                window.location.href = "/";
+            }
+        });
+        // 上傳大頭貼函式
+        const avatarInput = document.getElementById("avatarInput");
+        const avatarImage = document.getElementById("avatarImage");
+
+        avatarInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    avatarImage.src = e.target.result;
+                    avatarImage.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        // 上傳大頭貼 後端API /api/member/avatar
+
+        document.getElementById("uploadAvatarBtn").addEventListener("click", async () => {
+            const file = avatarInput.files[0];
+            if (!file) {
+                showAvatarAlert("請選擇一張圖片！");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("avatar", file);
+
+            const token = localStorage.getItem("token");
+
+            try {
+                const res = await fetch("/api/member/avatar", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const result = await res.json();
+                if (res.ok && result.ok) {
+                    showAvatarAlert("上傳成功！");
+                    avatarImage.src = result.avatar_url;
+                    avatarImage.style.display = "block";
+                } else {
+                    showAvatarAlert("上傳失敗：" + (result.message || "請稍後再試"));
+                }
+            } catch (err) {
+                showAvatarAlert("伺服器錯誤，請稍後再試");
+                console.error("上傳失敗：", err);
+            }
+        });
+
+
+        // 歷史訂單讀取函式  後端API /api/orders/history
+        let orderPage = 0;
+        const orderPageSize = 5; // 可調整每頁筆數
+        let nextOrderPage = null;
+
+        async function loadOrderHistory(token) {
+            const historyBox = document.getElementById("order-history");
+            // 新增按鈕選取
+            const loadMoreBtn = document.getElementById("load-more-btn");
+
+            try {
+                const res = await fetch(`/api/orders/history?page=${orderPage}&size=${orderPageSize}`, {
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                const result = await res.json();
+
+                if (!result.data || result.data.length === 0) {
+                    if (orderPage === 0) { // 在第一次載入沒資料時顯示
+                        historyBox.innerHTML = `
+                    <div class="empty-orders">
+                        <p class="empty-message">目前尚無歷史訂單</p>
+                        <button class="explore-btn" onclick="location.href='/'">👉馬上看景點</button>
+                    </div>
+                `;
+                    }
+                    loadMoreBtn.style.display = "none"; // 沒有更多資料就隱藏按鈕
+                    return;
+                }
+
+                result.data.forEach(order => {
+                    const isPaid = order.status === "PAID";
+                    const statusText = isPaid ? "✅ 已付款" : "⌛ 未付款";
+                    const statusColor = isPaid ? "green" : "red";
+
+                    const div = document.createElement("div");
+                    div.classList.add("order-item");
+                    div.innerHTML = `
+                        <div class="order-card">
+                        <img src="${order.attractionImage}" class="order-img" alt="景點圖片" />
+                        <div class="order-info">
+                            <p><strong>訂單編號：</strong>${order.number}</p>
+                            <p><strong>景點名稱：</strong>${order.attractionName}</p>
+                            <p><strong>日期：</strong>${order.date}</p>
+                            <p><strong>時間：</strong>${order.time === 'morning' ? '早上' : '下午'}</p>
+                            <p><strong>狀態：</strong><span style="color:${statusColor}; font-weight:bold">${statusText}</span></p>
+                        </div>
+                        </div>
+                        
+                    `;
+                    historyBox.appendChild(div);
+                });
+
+                nextOrderPage = result.nextPage;
+                if (nextOrderPage !== null) {
+                    loadMoreBtn.style.display = "inline-block";
+                } else {
+                    loadMoreBtn.style.display = "none";
+                }
+            } catch (err) {
+                historyBox.textContent = "讀取失敗，請稍後再試";
+            }
+        }
+        // 載入更多按鈕
+        document.getElementById("load-more-btn").addEventListener("click", () => {
+            if (nextOrderPage !== null) {
+                orderPage = nextOrderPage;
+                const token = localStorage.getItem("token");
+                loadOrderHistory(token);
+            }
+        });
+
+        // UpdateName API
+        // 進入編輯模式
+        document.getElementById("edit-name-btn").addEventListener("click", () => {
+            const nameText = document.getElementById("member-name").textContent;
+            document.getElementById("edit-name-input").value = nameText;
+            document.getElementById("edit-name-group").style.display = "block";
+        });
+
+        // 取消編輯
+        document.getElementById("cancel-name-btn").addEventListener("click", () => {
+            document.getElementById("edit-name-group").style.display = "none";
+        });
+
+        // 儲存編輯 → 呼叫 API
+        document.getElementById("save-name-btn").addEventListener("click", async () => {
+            const newName = document.getElementById("edit-name-input").value.trim();
+            const token = localStorage.getItem("token");
+
+            if (!newName || newName.length < 2) {
+                document.getElementById("nameAlert").style.display = "flex";
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/user/name", {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ name: newName }),
+                });
+
+                const result = await res.json();
+                if (res.ok && result.ok) {
+                    // 更新畫面
+                    document.getElementById("member-name").textContent = newName;
+                    document.getElementById("welcome-text").textContent = `👋 歡迎回來，${newName}！`;
+                    document.getElementById("edit-name-group").style.display = "none";
+
+                    //  清空 token 再設置新的
+                    localStorage.removeItem("token");
+
+                    localStorage.setItem("token", result.token);
+
+
+                    // 等 token 寫入後再做狀態檢查
+                    await checkLoginStatus();
+
+                } else {
+                    alert(result.message || "修改失敗，請稍後再試");
+                }
+            } catch (err) {
+                console.error("修改錯誤：", err);
+                alert("發生錯誤，請稍後再試");
+            }
+        });
+
+        // 關閉提醒視窗按鈕
+        document.getElementById("closeNameAlert").addEventListener("click", () => {
+            document.getElementById("nameAlert").style.display = "none";
+        });
+
+        // 顯示浮動提示
+        function showAvatarAlert(message) {
+            const alertBox = document.getElementById("avatarAlert");
+            const alertText = document.getElementById("avatarAlertText");
+            alertText.textContent = message;
+            alertBox.style.display = "flex";
+        }
+
+        // 關閉提示按鈕
+        document.getElementById("closeAvatarAlert").addEventListener("click", () => {
+            document.getElementById("avatarAlert").style.display = "none";
+        });
+    </script>
+</body>
+
+</html>

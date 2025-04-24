@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Request, Header, Body
+from fastapi import FastAPI, Query, Request, Header, Body, UploadFile, File
 from fastapi.responses import FileResponse, JSONResponse
 import json
 import mysql.connector
@@ -10,17 +10,19 @@ from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from dotenv import load_dotenv
-import os
 import requests
 import random
 import string
+from dotenv import load_dotenv
+from mysql.connector import pooling
+import os
+import glob
 load_dotenv()
 app=FastAPI()
 
 
 # JWT 設定
-JWT_SECRET = "12345678"
+JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_ALGORITHM = "HS256"
 
 # 設置 CORS
@@ -32,14 +34,20 @@ app.add_middleware(
     allow_headers=["*"],  # 允許所有標頭
 )
 
-# 連接 MySQL
-db = mysql.connector.connect(
-	host="127.0.0.1",
-	user="root",
-	password="12345678",
-	database="taipei_attractions"
+# 建立連線池
+dbconfig ={
+     "host": "127.0.0.1",
+     "user": os.getenv("DB_USER"),
+     "password": os.getenv("DB_PASSWORD"),
+     "database": os.getenv("DB_NAME")
+}
+
+cnxpool = pooling.MySQLConnectionPool(
+     pool_name="taipeipool",
+     pool_size=10,
+     pool_reset_session=True,
+     **dbconfig
 )
-cursor = db.cursor()
 
 # 讀取 JSON 檔案
 with open("data/taipei-attractions.json", "r", encoding="utf-8") as file:
@@ -56,12 +64,7 @@ def filter_images(image_string):
 # 插入資料到 MySQL
 def insert_data_to_db():
     try:
-        db = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="12345678",
-            database="taipei_attractions"
-        )
+        db = cnxpool.get_connection()
         cursor = db.cursor()
 
         for attraction in data["result"]["results"]:
@@ -107,6 +110,9 @@ async def booking(request: Request):
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
+@app.get("/member", include_in_schema=False)
+async def member(request: Request):
+	return FileResponse("./static/member.html", media_type="text/html")
 
 # 景點資料結構
 class Attraction(BaseModel):
@@ -157,6 +163,9 @@ class OrderRequest(BaseModel):
      order: BookingCreate
      contact: ContactInfo
 
+# 更新姓名結構
+class UserUpdateName(BaseModel):
+    name: str
 
 
 # === TapPay 金流串接函式 ===
@@ -200,12 +209,7 @@ def get_attractions(
     keyword: str = Query(None, alias="keyword")
 ):
     try:
-        db = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="12345678",
-            database="taipei_attractions"
-        )
+        db = cnxpool.get_connection()
         cursor = db.cursor(dictionary=True)
 
         # **固定每頁 12 筆**
@@ -285,12 +289,7 @@ def get_attraction(attractionId: str):
         )
 
     try:
-        db = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="12345678",
-            database="taipei_attractions"
-        )
+        db = cnxpool.get_connection()
         cursor = db.cursor(dictionary=True)
 
         cursor.execute("SET SESSION group_concat_max_len = 1000000;")
@@ -336,12 +335,7 @@ def get_attraction(attractionId: str):
 })
 def get_mrts():
     try:
-        db = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="12345678",
-            database="taipei_attractions"
-        )
+        db = cnxpool.get_connection()
         cursor = db.cursor(dictionary=True)
 
         # 取得所有的 MRT 資訊
@@ -371,12 +365,7 @@ def get_mrts():
 @app.post("/api/user")
 def register_user(user: UserRegister):
     try:
-          db = mysql.connector.connect (
-               host="127.0.0.1",
-               user="root",
-               password="12345678",
-               database="taipei_attractions"
-          )
+          db = cnxpool.get_connection()
           cursor = db.cursor()
 
           # 檢查 username 是否已存在
@@ -404,12 +393,7 @@ def register_user(user: UserRegister):
 @app.post("/api/user/auth")
 def login_user(user: UserLogin):
     try:
-        db = mysql.connector.connect (
-               host="127.0.0.1",
-               user="root",
-               password="12345678",
-               database="taipei_attractions"
-        )
+        db= cnxpool.get_connection()
         cursor = db.cursor(dictionary=True)
 
         # 根據 username 查詢會員資料
@@ -447,10 +431,20 @@ def check_auth(Authorization: Optional[str] = Header(None)):
               return {"data": None}
         # 解碼 token 並取得會員資料
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+
+        # 資料庫查詢 avatar_url
+        db = cnxpool.get_connection()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT avatar_url FROM member WHERE id = %s", (payload["id"],))
+        avatar_data = cursor.fetchone()
+        cursor.close()
+        db.close()
+
         return {"data": {
-             "id": payload["id"],
-             "name": payload["name"],
-             "username": payload["username"]
+            "id": payload["id"],
+            "name": payload["name"],
+            "username": payload["username"],
+            "avatar_url": avatar_data["avatar_url"] if avatar_data else None
         }}
     except Exception:
          # 解碼失敗，代表未登入
@@ -470,12 +464,7 @@ def create_booking(booking: BookingCreate = Body(...),Authorization: Optional[st
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         member_id = payload["id"]
         # 連接資料庫
-        db = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="12345678",
-            database="taipei_attractions"
-        )
+        db = cnxpool.get_connection()
         cursor = db.cursor()
 
         # 檢查是否已有預定 → 有的話更新，沒有的話插入
@@ -519,12 +508,7 @@ def get_booking(Authorization: Optional[str] = Header(None)):
         member_email = payload["username"]
 
         # 連接資料庫
-        db = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="12345678",
-            database="taipei_attractions"
-        )
+        db = cnxpool.get_connection()
         cursor = db.cursor(dictionary=True)
 
         # 查詢會員預訂資料 JOIN attractions 取得景點資料與圖片(name, address, image)
@@ -579,12 +563,7 @@ def delete_booking(Authorization: Optional[str] = Header (None)):
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         member_id = payload["id"]
         # 連接資料庫
-        db = mysql.connector.connect(
-             host="127.0.0.1",
-             user="root",
-             password="12345678",
-             database="taipei_attractions"
-        )
+        db = cnxpool.get_connection()
         cursor = db.cursor()
         #  刪除會員的預訂資料（
         cursor.execute("DELETE FROM booking WHERE member_id = %s", (member_id,))
@@ -619,9 +598,7 @@ def create_order(order_request: OrderRequest, Authorization: str = Header(None))
         order_number = generate_order_number()
 
         # 資料庫連線
-        db = mysql.connector.connect(
-            host="127.0.0.1", user="root", password="12345678", database="taipei_attractions"
-        )
+        db = cnxpool.get_connection()
         cursor = db.cursor()
 
         order = order_request.order
@@ -668,6 +645,165 @@ def create_order(order_request: OrderRequest, Authorization: str = Header(None))
         print("建立訂單失敗：", e)
         return JSONResponse(status_code=500, content={"error": True, "message": "伺服器錯誤"})
 
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
+# Member Avatar API
+@app.post("/api/member/avatar")
+def upload_avatar(
+    avatar: UploadFile = File(...),
+    Authorization: Optional[str] = Header(None)
+):
+    if not Authorization:
+        return JSONResponse(status_code=403, content={"error": True, "message": "未登入使用者"})
+    try:
+        scheme, token = Authorization.split()
+        if scheme.lower() != "bearer":
+            return JSONResponse(status_code=403, content={"error": True, "message": "授權格式錯誤"})
+
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        member_id = payload["id"]
+
+        filename = avatar.filename
+        if not filename.lower().endswith((".jpg", ".jpeg", ".png")):
+            return JSONResponse(status_code=400, content={"error": True, "message": "只支援 JPG/PNG 圖片格式"})
+
+        ext = filename.split(".")[-1]
+        saved_filename = f"member_{member_id}.{ext}"
+
+        # 找出所有這個 member_id 的舊圖檔（不論 .jpg/.png）
+        old_files = glob.glob(f"static/member_photos/member_{member_id}.*")
+        for f in old_files:
+            os.remove(f)
+
+        saved_path = f"static/member_photos/{saved_filename}"
+        # 儲存圖片
+        with open(saved_path, "wb") as buffer:
+            buffer.write(avatar.file.read())
+
+        # 儲存圖片路徑到資料庫
+        db = cnxpool.get_connection()
+        cursor = db.cursor()
+        avatar_url = f"/static/member_photos/{saved_filename}"
+        cursor.execute("UPDATE member SET avatar_url = %s WHERE id = %s", (avatar_url, member_id))
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return {
+            "ok": True,
+            "avatar_url": avatar_url
+        }
+    
+    except Exception as e:
+        print("上傳錯誤：", e)
+        return JSONResponse(status_code=500, content={"error": True, "message": "伺服器錯誤"})
+    
+# Order History API
+@app.get("/api/orders/history")
+def get_order_history(
+    page: int = Query(0, ge=0),
+    size: int = Query(5, ge=1),
+    Authorization: Optional[str] = Header(None)):
+
+    if not Authorization:
+        return {"data": [],"nextPage": None}
+
+    try:
+        # 驗證 JWT
+        scheme, token = Authorization.split()
+        if scheme.lower() != "bearer":
+            return {"data": [], "nextPage": None}
+
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        member_id = payload["id"]
+
+        db = cnxpool.get_connection()
+        cursor = db.cursor(dictionary=True)
+
+        offset = page * size
+
+        cursor.execute("""
+            SELECT 
+                o.order_number AS number,
+                o.date,
+                o.time,
+                o.status,
+                a.name AS attractionName,
+                (SELECT url FROM images WHERE attraction_id = a.id LIMIT 1) AS attractionImage
+            FROM orders o
+            JOIN attractions a ON o.attraction_id = a.id
+            WHERE o.member_id = %s
+            ORDER BY o.id DESC
+            LIMIT %s OFFSET %s
+        """, (member_id, size, offset))
+
+        orders = cursor.fetchall()
+        # 計算總筆數
+        cursor.execute("SELECT COUNT(*) AS total FROM orders WHERE member_id = %s", (member_id,))
+        total = cursor.fetchone()["total"]
+
+        next_page = page + 1 if offset + size < total else None
+
+        return {"data": orders, "nextPage": next_page}
+
+    except Exception as e:
+        print("取得歷史訂單失敗：", e)
+        return JSONResponse(status_code=500, content={"error": True, "message": "伺服器錯誤"})
+    finally:
+        if cursor: cursor.close()
+        if db: db.close()
+
+# Order UpdateName API
+
+@app.patch("/api/user/name")
+def update_user_name(data: UserUpdateName, Authorization: Optional[str] = Header(None)):
+    if not Authorization:
+        return JSONResponse(status_code=403, content={"error": True, "message": "未登入使用者"})
+
+    db = None
+    cursor = None
+    try:
+        scheme, token = Authorization.split()
+        if scheme.lower() != "bearer":
+            return JSONResponse(status_code=403, content={"error": True, "message": "授權格式錯誤"})
+
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        member_id = payload["id"]
+
+
+        # 驗證姓名有效性
+        new_name = data.name.strip()
+        if not new_name or len(new_name) < 2 or len(new_name) > 20:
+            return JSONResponse(
+                status_code=400,
+                content={"error": True, "message": "請輸入有效的姓名（長度需在 2~20 字之間）"}
+            )
+
+        db = cnxpool.get_connection()
+        cursor = db.cursor()
+        
+        cursor.execute("UPDATE member SET name = %s WHERE id = %s", (data.name, member_id))
+        db.commit()
+
+        # 產生新的 token 並回傳
+        new_payload = {
+            "id": payload["id"],
+            "name": data.name,
+            "username": payload["username"],
+            "exp": int((datetime.now(timezone.utc) + timedelta(days=7)).timestamp())
+        }
+        new_token = jwt.encode(new_payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+        return {
+            "ok": True,
+            "token": new_token
+        }
+    except Exception as e:
+        print("更新姓名錯誤：", e)
+        return JSONResponse(status_code=500, content={"error": True, "message": "伺服器錯誤"})
     finally:
         if cursor:
             cursor.close()

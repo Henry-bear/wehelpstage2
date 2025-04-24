@@ -65,7 +65,7 @@
 
   <!-- Footer -->
   <footer>
-    <div>COPYRIGHT © 2021 台北一日遊</div>
+    <div>COPYRIGHT © 2025 台北一日遊</div>
   </footer>
 
 
@@ -311,12 +311,8 @@
     let isLogin = true;
 
 
-    // 登入/註冊按鈕（打開彈跳視窗）
     const signBtn = document.querySelector(".btn-sign");
-    signBtn.addEventListener("click", () => {
-      // display 設為 flex（從 display: none 變成可見）
-      overlay.style.display = "flex";
-    });
+
 
     // 關閉按鈕（關閉彈窗並清空表單）
     const closeBtn = document.querySelector(".auth-close");
@@ -430,12 +426,14 @@
 
         if (result.data) {
           // 如果 token 存在，代表已登入
-          signBtn.textContent = "登出";
-          signBtn.addEventListener("click", handleLogout);
+          signBtn.textContent = "會員中心";
+          signBtn.onclick = () => {
+            window.location.href = "/member";
+          };
         } else {
           //  token 無效  顯示「登入／註冊」
           signBtn.textContent = "登入／註冊";
-          signBtn.addEventListener("click", showLoginModal);
+          signBtn.onclick = () => showLoginModal();
         }
       } catch (error) {
         console.error("登入狀態確認失敗：", error);
