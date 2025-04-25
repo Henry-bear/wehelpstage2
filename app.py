@@ -16,7 +16,7 @@ import string
 from dotenv import load_dotenv
 from mysql.connector import pooling
 import os
-import glob
+import glob, time
 load_dotenv()
 app=FastAPI()
 
@@ -673,20 +673,26 @@ def upload_avatar(
         ext = filename.split(".")[-1]
         saved_filename = f"member_{member_id}.{ext}"
 
-        # 找出所有這個 member_id 的舊圖檔（不論 .jpg/.png）
+        # 統一檔案命名，先刪除舊圖（不論副檔名）
+        ext = filename.split(".")[-1].lower()
+        saved_filename = f"member_{member_id}.{ext}"
         old_files = glob.glob(f"static/member_photos/member_{member_id}.*")
         for f in old_files:
             os.remove(f)
 
         saved_path = f"static/member_photos/{saved_filename}"
+
         # 儲存圖片
+        avatar.file.seek(0)
         with open(saved_path, "wb") as buffer:
             buffer.write(avatar.file.read())
+
+        # 回傳帶時間戳避免快取
+        avatar_url = f"/static/member_photos/{saved_filename}?t={int(time.time())}"
 
         # 儲存圖片路徑到資料庫
         db = cnxpool.get_connection()
         cursor = db.cursor()
-        avatar_url = f"/static/member_photos/{saved_filename}"
         cursor.execute("UPDATE member SET avatar_url = %s WHERE id = %s", (avatar_url, member_id))
         db.commit()
         cursor.close()
