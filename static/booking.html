@@ -79,7 +79,7 @@
         </div>
         <div class="form-group">
           <label for="contact-phone">手機號碼：</label>
-          <input id="contact-phone" type="tel" placeholder="請輸入手機號碼">
+          <input id="contact-phone" type="tel" maxlength="10" pattern="[0-9]{10}" required placeholder="請輸入手機號碼">
         </div>
         <p class="form-note">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
       </div>
@@ -120,7 +120,7 @@
 
   <!-- Footer -->
   <footer>
-    <div>COPYRIGHT © 2021 台北一日遊</div>
+    <div>COPYRIGHT © 2025 台北一日遊</div>
   </footer>
 
 
@@ -193,14 +193,6 @@
     const submitBtn = document.getElementById("auth-submit");
     // 記錄目前是否為登入模式（true = 登入, false = 註冊）
     let isLogin = true;
-
-
-    // 登入/註冊按鈕（打開彈跳視窗）
-    const signBtn = document.querySelector(".btn-sign");
-    signBtn.addEventListener("click", () => {
-      // display 設為 flex（從 display: none 變成可見）
-      overlay.style.display = "flex";
-    });
 
     // 關閉按鈕（關閉彈窗並清空表單）
     const closeBtn = document.querySelector(".auth-close");
@@ -317,13 +309,18 @@
 
         if (result.data) {
           // 如果 token 存在，代表已登入
-          signBtn.textContent = "登出";
-          signBtn.addEventListener("click", handleLogout);
+          signBtn.textContent = "會員中心";
+          signBtn.onclick = () => {
+            window.location.href = "/member";
+          };
         } else {
           //  token 無效  顯示「登入／註冊」
           signBtn.textContent = "登入／註冊";
-          signBtn.addEventListener("click", showLoginModal);
+          signBtn.onclick = () => showLoginModal();
         }
+
+        // 確保不會出現重複綁定
+        overlay.style.display = "none";
       } catch (error) {
         console.error("登入狀態確認失敗：", error);
       }
@@ -511,9 +508,29 @@
         ccv: { element: '#card-ccv', placeholder: 'CCV' }
       },
       styles: {
-        'input': { 'color': 'black' },
-        ':focus': { 'color': '#666666' }
+        'input': {
+          'color': '#333',
+          'font-size': '16px',
+          'border': '1px solid #ccc',
+          'border-radius': '4px',
+          'padding': '8px',
+          'background-color': '#FFFFFF'
+        },
+        'input:focus': {
+          'border': '1px solid #448899',
+          'box-shadow': '0 0 4px #44889966'
+        },
+        '.valid': {
+          'color': '#28a745'
+        },
+        '.invalid': {
+          'color': '#dc3545'
+        }
       }
+    });
+
+    document.getElementById("contact-phone").addEventListener("input", function (e) {
+      this.value = this.value.replace(/\D/g, "");  // 移除非數字
     });
 
     // 綁定「確認付款」按鈕
@@ -537,6 +554,7 @@
         const prime = result.card.prime;
 
         // 驗證手機號碼欄位
+
         const phone = document.getElementById("contact-phone").value;
         if (!phone.trim()) {
           document.getElementById("phoneAlert").style.display = "flex";

@@ -106,6 +106,142 @@ body {
     opacity: 1;
 }
 
+/* booking.html*/
+
+#contact-name:focus,
+#contact-email:focus,
+#contact-phone:focus {
+    border-color: #448899;
+    outline: none;
+    box-shadow: 0 0 3px #44889966;
+}
+
+/* member.html */
+.avatar-upload-section p {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.avatar-upload-section input[type="file"] {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+
+#uploadAvatarBtn,
+#chooseFileBtn {
+    margin-left: 10px;
+    font-size: 14px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    background-color: #448899;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+
+#edit-name-input {
+    width: 200px;
+    height: 30px;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 14px;
+    background-color: #fff;
+    margin-right: 5px;
+    box-sizing: border-box;
+}
+
+#edit-name-input:focus {
+    border-color: #448899;
+    outline: none;
+    box-shadow: 0 0 3px #44889966;
+}
+
+#save-name-btn,
+#cancel-name-btn {
+    padding: 4px 12px;
+    background-color: #448899;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: background-color 0.3s;
+}
+
+#save-name-btn:hover,
+#cancel-name-btn:hover {
+    background-color: #307080;
+}
+
+#save-name-btn:active,
+#cancel-name-btn:active {
+    transform: scale(0.96);
+}
+
+#load-more-btn {
+    padding: 10px 20px;
+    background-color: #448899;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#load-more-btn:hover {
+    background-color: #307080;
+}
+
+#edit-name-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    margin-left: 5px;
+}
+
+.order-list {
+    color: #666666;
+    font-weight: 500;
+}
+
+.empty-orders {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.empty-message {
+    font-size: 18px;
+    color: #666666;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.explore-btn {
+    padding: 10px 20px;
+    background-color: #448899;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.explore-btn:hover {
+    background-color: #307080;
+}
+
+
 @media (max-width: 599px) {
 
     /* Navigation Bar */
@@ -197,6 +333,40 @@ body {
         color: #666666;
         z-index: 10;
     }
+
+    /* Member.html */
+    .order-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .order-img {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        object-fit: cover;
+        border-radius: 12px;
+        margin: 0 auto;
+    }
+
+    .order-info {
+        padding: 10px;
+        text-align: left;
+    }
+
+    #edit-name-input {
+        width: 160px;
+        height: 30px;
+        padding: 4px 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: "Noto Sans TC", sans-serif;
+        font-size: 14px;
+        background-color: #fff;
+        margin-right: 5px;
+        box-sizing: border-box;
+    }
+
 }
 
 /* 360px手機版 */
@@ -1270,6 +1440,65 @@ body {
         padding-bottom: 10px;
         padding: 10px 0px;
     }
+
+    /* Member.html */
+    /* 外層容器 */
+    .member-container {
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
+        padding: 40px 0px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #welcome-text {
+        font-size: 28px;
+        color: #448899;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .member-section {
+        width: 100%;
+        max-width: 360px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #F9FAFB;
+        border: 1px solid #E0E0E0;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .member-info p {
+        margin: 10px 0;
+        color: #666666;
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+    .order-card {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        border: 1px solid #E0E0E0;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .order-img {
+        width: 250px;
+        height: 170px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .order-info p {
+        margin: 6px 0;
+        color: #666666;
+    }
 }
 
 
@@ -2232,6 +2461,64 @@ body {
         color: #666666;
         padding-bottom: 10px;
         padding: 10px 0px;
+    }
+
+    /* Member.html */
+    #welcome-text {
+        font-size: 28px;
+        color: #448899;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .member-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 0px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .member-section {
+        width: 100%;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #F9FAFB;
+        border: 1px solid #E0E0E0;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .member-info p {
+        margin: 10px 0;
+        color: #666666;
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+    .order-card {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        border: 1px solid #E0E0E0;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .order-img {
+        width: 250px;
+        height: 170px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .order-info p {
+        margin: 6px 0;
+        color: #666666;
     }
 }
 
@@ -3359,5 +3646,64 @@ body {
         padding-bottom: 10px;
         padding: 10px 0px;
     }
+
+    /* Member.html */
+    #welcome-text {
+        font-size: 28px;
+        color: #448899;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .member-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 0px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .member-section {
+        width: 100%;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #F9FAFB;
+        border: 1px solid #E0E0E0;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .member-info p {
+        margin: 10px 0;
+        color: #666666;
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+    .order-card {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        border: 1px solid #E0E0E0;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .order-img {
+        width: 250px;
+        height: 170px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .order-info p {
+        margin: 6px 0;
+        color: #666666;
+    }
+
 
 }
