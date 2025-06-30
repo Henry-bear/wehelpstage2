@@ -1,4 +1,4 @@
-# 台北一日遊 | Taipei One Day Trip
+# 台北一日遊 | Taipei Day Trip
 
 一個提供旅遊預約體驗的全端專案，實作使用者會員系統、行程預約、付款流程等功能，前後端皆自建，並成功部署至 AWS EC2。整合 TapPay 金流模組，模擬完整下單付款流程，具備完整資料庫設計與 RESTful API 實作。
 
