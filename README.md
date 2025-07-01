@@ -49,24 +49,27 @@ taipei-day-trip/
 ### `/` 首頁
 - 景點清單與搜尋（支援無限滾動載入）
 - 點擊進入景點詳細頁面
-
+<img src="./assets/homepage.png" width="700" alt="Taipei Day Trip首頁" />
 
 ### `/member` 會員中心頁面
 
 - 上傳大頭貼：可即時預覽與儲存
 - 查看歷史訂單：顯示所有付款成功記錄
-
+<img src="./assets/member-page.png" width="700" alt="會員頁面" />
 
 ### `/attraction/<id>` 景點詳情頁面
 - 輪播圖展示、景點說明、交通資訊
 - 行程預約（選擇日期、時段、金額）
+<img src="./assets/attraction-page.png" width="700" alt="景點頁面" />
 
 ### `/booking` 行程預約頁面
 - 顯示會員預約內容
 - 可刪除預約，填寫聯絡資訊後付款
+<img src="./assets/booking-page.png" width="700" alt="預定頁面" />
 
 ### `/thankyou` 成功頁面
 - 顯示付款成功與訂單編號
+<img src="./assets/thank-purchase-page.png" width="700" alt="付款成功頁面" />
 
 ---
 
