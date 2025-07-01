@@ -34,7 +34,7 @@ taipei-day-trip/
 - RWD 響應式設計（含 360px、768px、1200px 斷點）
 
 ### Backend
-- FastAPI + Pydantic
+- FastAPI 
 - RESTful API 設計（註冊、登入、預約、訂單）
 - JWT 身份驗證機制
 - MySQL 資料庫設計與操作
@@ -43,9 +43,8 @@ taipei-day-trip/
 
 ### Deploy
 - AWS EC2（Ubuntu）
-- Uvicorn + systemd 服務啟動
-- MySQL 雲端資料庫
-
+- 使用 `uvicorn` 指令手動啟動 FastAPI 
+- MySQL 安裝在 EC2 上並本機連線
 ---
 
 ## 🧩 功能簡介
