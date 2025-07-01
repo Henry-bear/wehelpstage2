@@ -8,15 +8,21 @@
 ---
 
 ## 📁 目錄結構 (File Structure)
-
+本專案使用 FastAPI + 原生 HTML/CSS/JS，並採用扁平化資料夾結構，主要內容如下：
 ```bash
-.
-├── templates/             # HTML 模板頁面（index.html, booking.html, thankyou.html）
-├── static/                # 靜態資源 (CSS / JS)
-├── app.py                 # FastAPI 主程式
-├── database.py            # 資料庫連線與連線池設定
-├── .env                   # 機密資訊與設定
-└── requirements.txt       # Python 相依套件列表
+taipei-day-trip/
+├── app.py # FastAPI 主應用
+├── .env # 機密資訊 (.env)
+├── taipei-attractions.json # 景點資料初始化用
+├── static/ # 前端靜態檔案（所有 HTML、CSS、JS、圖片）
+│ ├── index.html # 首頁
+│ ├── attraction.html # 景點頁面
+│ ├── booking.html # 預定行程頁
+│ ├── member.html # 會員中心頁
+│ ├── thankyou.html # 訂單完成頁
+│ ├── main.css # 全站樣式表
+│ ├── icon_*.png # icon 圖片素材
+│ └── member_photos/ # 上傳頭像資料夾
 ```
 
 ## 🛠 使用技術 (Tech Stack)
